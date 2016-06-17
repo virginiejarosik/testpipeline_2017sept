@@ -1,0 +1,51 @@
+<?php
+/**
+ * @file 
+ * Send mail to subscribted users. 
+*/
+function subscribe_mailer_bynid($nid) {
+  $items = views_get_view_result('subscribe_results', $display_id = NULL);
+  foreach($items as $key => $vaule) {
+    module_load_include('inc', 'webform', 'includes/webform.submissions');
+    $subscribes = webform_get_submission($vaule->node_nid, $vaule->sid, $reset = FALSE);
+    foreach($subscribes->data[3] as $key => $value) {
+      $value[0];
+    }
+  }
+}
+
+/** 
+ * Implementation of hook_node_insert(). 
+ */ 
+function subscribe_mailer_node_insert($node) {
+  subscribe_mailer_bynid($node->nid); 
+}
+
+/**
+ * Implementation of hook_node_update(). 
+ */
+function subscribe_mailer_node_update($node) {
+  subscribe_mailer_bynid($node->nid); 
+}
+
+/** 
+ *Implemenation of hook_action_info(). 
+ */
+function subscribe_mailer_action_info() { 
+  return array(
+    'subscribe_mailer_bynid_action' => array( 
+      'type' => 'system',
+      'label' => t('Subscribe Mailer'),
+      'configurable' => FALSE,
+      'triggers' => array('node_insert', 'node_update'),
+    ),
+  );
+}
+
+/**
+ * Doing the subscribe action
+ */
+function subscribe_mailer_bynid_action() {
+  subscribe_mailer_bynid(); 
+}
+

@@ -1,0 +1,1 @@
+<?php print '<p>'.t('Special Contributor').'</p>'; ?>

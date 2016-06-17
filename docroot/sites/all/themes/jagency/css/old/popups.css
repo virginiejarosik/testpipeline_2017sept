@@ -1,0 +1,22 @@
+
+/* Start - PopUp */
+
+/* Start - General Popups */
+.ui-widget-overlay {
+        -moz-background-clip:border;
+        -moz-background-inline-policy:continuous;
+        -moz-background-origin:padding;
+        background:black none repeat-x scroll 50% 50%;
+        left:0;
+        opacity:0.60;
+        filter: alpha(opacity = 60);
+        position:absolute;
+        top:0;
+        }
+.ui-dialog { padding: 0; border: none; background: none; }
+.ui-resizable-n, .ui-resizable-e, .ui-resizable-s, .ui-resizable-w, .ui-resizable-se, .ui-resizable-sw, .ui-resizable-ne, .ui-resizable-nw { display: none !important; }
+.ui-corner-all { border-radius: 0 0 0 0; }
+/* End - General Popups */
+
+
+/* End - PopUp */

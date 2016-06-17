@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Jagency subscribe mailer feature.
+ */
+
+include_once 'jagency_subscribe_mailer.features.inc';

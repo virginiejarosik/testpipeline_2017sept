@@ -1,0 +1,32 @@
+<?php
+
+// jagency_migrateinstall
+function jagency_migrate_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      // the {tablename} syntax is so multisite installs can add a
+      // prefix to the table name as set in the settings.php file
+      db_query("CREATE TABLE `migration` (
+                `id` int(100) NOT NULL AUTO_INCREMENT,
+                `hash` varchar(255) DEFAULT NULL,
+                `url` text,
+                `parent` text,
+                `http_status` varchar(100) DEFAULT NULL,
+                `content` longblob,
+                `meta` text,
+                `status` tinyint(1) DEFAULT '0',
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `hash` (`hash`)
+              ) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;");
+              
+      db_query("CREATE TABLE `migration_history` (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `original` text,
+        `website` text,
+        PRIMARY KEY (`id`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+      break;
+  }
+}
+?>

@@ -1,0 +1,5 @@
+name = "Acquia Varnish Cache Clear"
+description = "Clears the varnish cache on page edits."
+core = 7.x
+
+files[] = avcc.module

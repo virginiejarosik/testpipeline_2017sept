@@ -1,0 +1,460 @@
+<?php
+
+/**
+ * Implement hook_menu() 
+ */
+function jagency_import_menu() {
+  $items = array();  
+  
+  $items['admin/config/jagency/agency_export'] = array(
+    'title' => 'Import programs',
+    'access callback' => TRUE,
+    'access arguments' => array('administer site configuration'), 
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('jagency_import_programs_form')
+  );
+  
+  $items['admin/config/jagency/clone'] = array(
+    'title' => 'Content cloning to different language',
+    'access callback' => TRUE,
+    'access arguments' => array('administer site configuration'), 
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('jagency_import_clone_form')
+  );
+  
+  $items['ajax/search-node'] = array(
+    'title' => 'Content cloning to different language',
+    'access callback' => TRUE,
+    'access arguments' => array('administer site configuration'), 
+    'page callback' => 'jagency_import_node_search',
+  );
+  
+  return $items;
+}
+
+function jagency_import_node_search() {
+  $word = arg();
+}
+
+/**
+ * Implementation of hook_form
+ */
+function jagency_import_clone_form() {
+  $form = array();
+  
+  $form['clone'] = array(
+    '#type' => "fieldset",
+    '#title' => t("Clone control"),
+    '#collapsible' => 1,
+    '#collapsed' => NULL
+  );
+  
+  $types = node_type_get_types();
+  $options = array('' => t('Please choose'));
+  $options += array('program-details-woexport' => "Programs W/O export");
+  foreach ($types as $key => $type) {
+    $options[$key] = $type->name; 
+  }
+  $form['clone']['types'] = array(
+    '#title' => t('Choose node type to clone'),
+    '#type' => 'select',
+    '#description' => t('All nodes by choosed type will be cloned to needed domain'),
+    '#type' => 'select',
+    '#options' => $options,
+  );
+  
+  $form['clone']['nodelist'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Or you can choose needed nodes by select them'),
+    '#autocomplete_path' => 'ajax/search-node',
+  );
+  
+  $domains = domain_list_by_machine_name();
+  $options = array();
+  foreach ($domains as $key => $val) {
+    $options[$val['domain_id']] = $val['sitename'];
+  }
+  $form['domain'] = array(
+    '#title' => t('Choose destination domain'),
+    '#description' => t('All nodes will be cloned to choosed domain'),
+    '#type' => 'select',
+    '#options' => $options,
+  );
+  
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Start'),
+  );
+  return $form;
+}
+
+function jagency_import_clone_form_submit($form, $form_state) {
+  $type = $form_state['values']['types'];
+  $domain = domain_load($form_state['values']['domain']);
+  $current_domain = domain_get_domain();
+  $program_export = 0;
+  if ($type == 'program-details-woexport') {
+    $type = 'program_details';
+    $program_export = 1;
+  }
+  $nodes = node_load_multiple(array(), array('type' => $type));
+  foreach($nodes as $node) {
+    if (in_array($current_domain['domain_id'], $node->domains)) {
+      if ($program_export) {
+        if (isset($node->field_imported_program[LANGUAGE_NONE]) && $node->field_imported_program[LANGUAGE_NONE][0]['value'] == 1) {
+          continue;
+        }
+      }
+      drupal_set_message('Node ' . $node->title . '(' . $node->nid . ') to domain ' . $domain['sitename']);
+      jagency_import_clone_node_save($node->nid, $domain);
+    }
+  }
+}
+
+/**
+ *  Clones a node by directly saving it.
+ */
+function jagency_import_clone_node_save($nid, $domain = null) {
+  if (is_numeric($nid)) {
+    global $user;
+    module_load_include('inc', 'clone', 'clone.pages');
+    $node = node_load($nid);
+    if (isset($node->nid) && clone_is_permitted($node->type)) {
+      $original_node = clone $node;
+
+      $node->nid = NULL;
+      $node->vid = NULL;
+      $node->tnid = NULL;
+      // Anyonmymous users don't have a name.
+      // @see: drupal_anonymous_user().
+      $node->name = isset($user->name) ? $user->name : NULL;
+      $node->uid = $user->uid;
+      $node->created = NULL;
+      $node->menu = clone_node_clone_menu_link($original_node);
+      if (isset($node->book['mlid'])) {
+        $node->book['mlid'] = NULL;
+        $node->book['has_children'] = 0;
+      }
+      $node->path = NULL;
+      $node->files = array();
+      $node->title = t('Clone of !title', array('!title' => $node->title));
+      // Add an extra property as a flag.
+      $node->clone_from_original_nid = $original_node->nid;
+
+      if (variable_get('clone_reset_'. $node->type, FALSE)) {
+        $node_options = variable_get('node_options_'. $node->type, array('status', 'promote'));
+        // Fill in the default values.
+        foreach (array('status', 'moderate', 'promote', 'sticky', 'revision') as $key) {
+          // Cast to int since that's how they need to be saved to the DB.
+          $node->$key = (int) in_array($key, $node_options);
+        }
+      }
+      
+      if ($domain) {
+        $node->domains = array($domain['domain_id'] => $domain['domain_id']);
+        $node->domain_site = $domain['domain_id'];
+        $node->subdomains = array($domain['domain_id'] => $domain['sitename']);
+        $node->domain_source = $domain['domain_id'];
+      }
+      
+      // Let other modules do special fixing up.
+      $context = array('method' => 'save-edit', 'original_node' => $original_node);
+      drupal_alter('clone_node', $node, $context);
+
+      node_save($node);
+      return $node->nid;
+    }
+  }
+}
+
+/**
+ * Implementation of hook_form
+ */
+function jagency_import_programs_form() {
+
+  $form = array();
+  
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Start'),
+  );
+  
+  return $form;
+}
+
+/**
+ * Im
+function jagency_import_programs_form_validate($form, &$form_state) {
+  $file = file_save_upload('file', array(
+      'file_validate_extensions' => array('csv txt xls'),
+  ));
+  
+  if ($file) {
+    if ($file = file_move($file, 'public://')) {
+      $form_state['values']['file'] = $file;
+    }
+    else {
+      form_set_error('file', t('Failed to write the uploaded file the site\'s file folder.'));
+    }
+  }
+  else {
+    form_set_error('file', t('No file was uploaded.'));
+  }
+}
+
+/**
+ * Implementation of hook_form_submit
+ */
+function jagency_import_programs_form_submit($form, $form_state) {
+  $programs = explode("\n", file_get_contents(drupal_get_path('module', 'jagency_import'). '/BEFORE_CSV_form3export1.csv'));
+
+/*
+  $path = file_create_url($file->uri);
+  switch ($file->filemime) {
+    case 'application/vnd.ms-excel':
+      include_once 'Excel/reader.php';
+      $data = new Spreadsheet_Excel_Reader();
+      $data->read(drupal_realpath($file->uri));
+      for ($i = 1; $i <= $data->sheets[0]['numRows']; $i++) {
+        $program = '';
+        for ($j = 1; $j <= $data->sheets[0]['numCols']; $j++) {
+          $program .=  "\"".$data->sheets[0]['cells'][$i][$j]."\";";
+        }
+        $operations[] = array('jagency_import_create_program', array($program));
+      }
+      break;
+    
+    default:*/
+      //$programs = trim(preg_replace('/\s+/', ' ', file_get_contents($path)));
+      //$programs = explode(';"999"', $programs);
+      $programs = explode("\n", file_get_contents(drupal_get_path('module', 'jagency_import'). '/BEFORE_CSV_form3export1.csv'));
+      foreach ($programs as $program) {
+        $operations[] = array('jagency_import_create_program', array($program));
+      }
+
+  $batch = array(
+    'operations' => $operations,
+    'finished' => 'jagency_import_create_program_finished',
+    'title' => 'Program import proccess',
+    'init_message' => 'Data prepearing',
+    'progress_message' => 'Done @current from @total.',
+    'error_message' => 'Error accure.',
+  );
+  batch_set($batch);
+  batch_process();
+}
+
+/**
+ * Import function
+ */
+function jagency_import_create_program($program, &$context) {
+
+  global $user;
+  $data = explode('|', substr(trim(str_replace('";"', '|', $program)), 1, -1));
+  $taxid = array_keys(taxonomy_get_term_by_name(addslashes(strip_tags(trim($data[5]))), 'occupation'));
+  if (!isset($taxid[0])) {
+    $taxid = array(1591);
+  }
+  if (!isset($data[1]) || $data[1] == '') {
+    return;
+  }
+  
+  $entity_create = entity_create('node', array('type' => 'program_details'));
+  
+  // Create a Entity Wrapper of that new Entity
+  $entity = entity_metadata_wrapper('node', $entity_create);
+  
+  $entity->title = str_replace("\'", "'", $data[1]);
+  $entity->promote = 1;
+  //$entity->domain_source = 1;
+  $entity->field_imported_program->set('1');
+  $entity->author = $user->uid;
+  $entity->field_view_mode->set('program_without_sidemenu');
+  $entity->field_organizer->set($data[2]);
+  $entity->field_program_mailto->set($data[3]);
+  $entity->field_program_phone->set($data[4]);
+  $entity->field_program_phone_2->set($data[5]);
+  $entity->field_organizer_website->set($data[6]);
+  $entity->field_program_website->set($data[7]);
+  $entity->field_logo_link->set($data[8]);
+  $entity->field_short_description->set(trim(str_replace('="', '', $data[9])));
+  
+  $entity->field_program_category = jagency_import_term_update('program_category', $data[10]);
+  $entity->field_age_group = jagency_import_term_update('age_groups', $data[11]);
+  $entity->field_masa_recognition = $data[12];
+  
+  $entity->field_how_long = jagency_import_how_long($data[17], $data[18]);
+  
+  $date = jagency_get_date($data[13]);
+  $date2 =  $date;
+  if(jagency_import_how_long($data[17], $data[18]) != NULL && $date !== false) {
+    $date2 = $date + jagency_import_how_long($data[17], $data[18]);
+  }
+  if ($date !== false) {
+    $entity->field_year->set($date);
+    $entity->field_start_date = array('value' => date('Y-m-d h:i:s' ,$date),  'value2' => date('Y-m-d h:i:s' ,$date2), 'timezone' => 'Europe/Minsk');
+  }
+  
+  $date2 = jagency_get_date($data[14]);
+  if ($date2 !== false) {
+    $entity->field_start_date_2 = $date2;
+  }
+  
+  $date3 = jagency_get_date($data[15]);
+  if ($date3 !== false) {
+    $entity->field_start_date_3 = $date3;
+  }
+  
+  $date4 = jagency_get_date($data[16]);
+  if ($date4 !== false) {
+    $entity->field_start_date_4 = $date4;
+  }
+
+  $entity->field_duration_type->set($data[17]);
+  $entity->field_duration_period->set($data[18]);
+  $entity->field_time_of_year->set($data[19]);
+  if (intval($data[20]) != 0) {
+    $entity->field_total_cost->set($data[20]);
+  } else {
+    $entity->field_total_cost->set('0');
+  }
+  
+  $icons = array();
+  foreach(explode(',', $data[21]) as $value) {
+    if (trim($value) != '') {
+      $icons[] = trim($value);
+    }
+  }
+  $entity->field_program_icons->set($icons);
+  
+  $entity->field_type_of_program = jagency_import_term_update('type_of_program', $data[22]);
+  
+  $keywords = ($data[23] ? $data[23] . ',' : '') . ($data[24] ? $data[24] . ',' : '') . ($data[25] ? $data[25] . ',' : '') . ($data[26] ? $data[26] : '');
+  $keywords = explode(',', $keywords);
+  $terms = array();
+  foreach ($keywords as $keyword) {
+    $keyword = str_replace('"', '', $keyword);
+    if($keyword != '') {
+      $term = jagency_import_term_update('interest_keywords', trim($keyword));
+      if ($term->tid) {
+        $entity->field_interest_keywords[] = $term->tid;
+      }
+    }
+  }
+
+  $keywords = explode(',', $data[27]);
+  $terms = array();
+  foreach ($keywords as $keyword) {
+    $term = jagency_import_term_update('what_do_you_want_to_do', trim($keyword));
+    $entity->field_what_do_you_want_to_do[] = $term->tid;
+  }
+  
+  $langs = explode(',', $data[28]);
+  foreach ($langs as $lang) {
+    $langterm = jagency_import_term_update('language', trim($lang));
+    $entity->field_language[] = $langterm->tid;
+  }
+
+  $entity->field_taxonomy_country = jagency_import_term_update('locations', $data[29]);
+  
+  $keyword = array_shift(explode(',', $data[30]));
+  if($keyword) {
+    $entity->field_taxonomy_region = jagency_import_location('locations', $data[29], $keyword);
+    $entity->field_where_do_you_want_togo = jagency_import_term_update('where_do_you_want_to_go', $keyword);
+  }
+  
+  $entity->save();
+}
+
+/**
+ * Helper function to insert needed region at specific country
+ */
+function jagency_import_location($vocabulary, $country, $region) {
+  $country = array_pop(taxonomy_get_term_by_name(trim($country), $vocabulary));
+  $region = ucfirst(trim($region));
+  
+  $term = array_pop(taxonomy_get_term_by_name($region, $vocabulary));
+  if (!isset($term->tid) && $region != '') {
+    $vocabulary = taxonomy_vocabulary_machine_name_load($vocabulary);
+    $term = new StdClass;
+    $term->name = $region;
+    $term->vid = $vocabulary->vid;
+    $term->domains_raw = array(domain_get_domain());
+    $term->parent = $country->tid;
+    taxonomy_term_save($term);
+  }
+    
+  //db_insert('domain_taxonomy_access')->fields(array('tid' => $term->tid, 'gid' => 0, 'realm' => 'domain_site', 'grant_view' => 1, 'grant_update' => 0, 'grant_delete' => 0))->execute();
+  //db_insert('domain_taxonomy_access')->fields(array('tid' => $term->tid, 'gid' => 1, 'realm' => 'domain_id', 'grant_view' => 1, 'grant_update' => 1, 'grant_delete' => 1))->execute();
+  //db_insert('domain_taxonomy_source')->fields(array('tid' => $term->tid, 'domain_id' => 1))->execute();
+  return $term;
+}
+
+/**
+ * Helper function to calcuclate how much time will take specific period
+ */
+function jagency_import_how_long($type, $period) {
+  $day = 0;
+  switch($type) {
+    case 'in months':
+      $day = $period * 30;
+      break;
+    case 'in weeks':
+      $day = $period * 7;
+      break;
+    case 'in days':
+      $day = $period;
+      break;
+  }
+  $day = $day * 24 * 60 * 60;
+  return $day;
+}
+
+/**
+ * Helper function to insert needed term at vocabulary
+ */
+function jagency_import_term_update($vname, $tname) {
+  $tname = ucfirst(trim($tname));
+  $vname = trim($vname);
+  $vocabulary = taxonomy_vocabulary_machine_name_load($vname);
+  $term = array_pop(taxonomy_get_term_by_name($tname, $vname));
+  if (!isset($term->tid) && $tname != '') {
+    $term = new StdClass;
+    $term->name = $tname;
+    $term->vid = $vocabulary->vid;
+    $term->domains_raw = array(domain_get_domain());
+    taxonomy_term_save($term);
+    
+    //db_insert('domain_taxonomy_access')->fields(array('tid' => $term->tid, 'gid' => 0, 'realm' => 'domain_site', 'grant_view' => 1, 'grant_update' => 0, 'grant_delete' => 0))->execute();
+    //db_insert('domain_taxonomy_access')->fields(array('tid' => $term->tid, 'gid' => 1, 'realm' => 'domain_id', 'grant_view' => 1, 'grant_update' => 1, 'grant_delete' => 1))->execute();
+    //db_insert('domain_taxonomy_source')->fields(array('tid' => $term->tid, 'domain_id' => 1))->execute();
+  }
+  return $term;
+}
+
+/**
+ * end import function
+ */
+function jagency_import_create_program_finished($success, $results, $operations) {
+  if ($success) {
+    drupal_set_message('Total programs created ' . count($results));
+  }
+  else {
+    drupal_set_message('Done but with errors.', 'error');
+  }
+}
+
+/**
+ * Helper function parsing date
+ */
+function jagency_get_date($date) {
+  $exploded = explode('/', $date);
+  if (count($exploded) == 3) {
+    return mktime(0, 0, 0, $exploded[1], $exploded[0], $exploded[2]);
+  }
+  $parsed = date_parse($date);
+  if (isset($parsed['year']) && $parsed['year']) {
+    return mktime(0, 0, 0, $parsed['month'], $parsed['day'], $parsed['year']);
+  }
+  return false;
+}

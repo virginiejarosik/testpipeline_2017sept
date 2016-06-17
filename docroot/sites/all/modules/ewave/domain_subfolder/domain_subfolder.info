@@ -1,0 +1,9 @@
+name = Domain Subfolder
+description = Manage domains as subfolders
+package = Domain Access
+core = 7.x
+version = "7.x-1.0"
+dependencies[] = domain
+
+files[] = domain_subfolder.module
+files[] = domain_subfolder.inc

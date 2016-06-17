@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * @file
+ * Cacheflush Rules module.
+ */
+
+/**
+ * Implements hook_cacheflush_clear_before().
+ */
+function cacheflush_rules_cacheflush_clear_before($settings) {
+  rules_invoke_event('cacheflush_before', array('preset_id' => $settings['preset_id']));
+}
+
+/**
+ * Implements hook_cacheflush_clear_after().
+ */
+function cacheflush_rules_cacheflush_clear_after($settings) {
+  rules_invoke_event('cacheflush_after', array('preset_id' => $settings['preset_id']));
+}
+
+/**
+ * Implements validation for codition.
+ */
+function cacheflush_rules_condition_compare($pid, $pid_array, $object) {
+
+  if (isset($object->variables['preset_id']['preset_id'])) {
+    if (array_key_exists($object->variables['preset_id']['preset_id'], $pid)) {
+      return TRUE;
+    }
+  }
+  else {
+    watchdog('cacheflush', 'Rules codition recive no preset id.', array(), WATCHDOG_NOTICE);
+  }
+
+  return FALSE;
+}
+
+/**
+ * Return the preset list.
+ * 
+ * @return array
+ *   Preset list.
+ */
+function cacheflush_rules_get_preset_list() {
+
+  // Get presets.
+  $cache_presets = variable_get('cacheflush_preset_list', array());
+
+  $list = array();
+  foreach ($cache_presets as $key => $value) {
+    $list[$key] = $value['#name'];
+  }
+
+  return $list;
+}
+
+/**
+ * Cacheflush rules action for clearing cache.
+ * 
+ * @param array $selected_presets
+ *   Selected presets list.
+ */
+function cacheflush_rules_clear_cache($selected_presets) {
+
+  foreach ($selected_presets as $preset_id) {
+    _cacheflush_clear_preset($preset_id);
+  }
+}

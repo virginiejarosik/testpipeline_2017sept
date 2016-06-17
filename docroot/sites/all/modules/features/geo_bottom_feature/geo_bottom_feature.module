@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Geo Bottom feature feature.
+ */
+
+include_once 'geo_bottom_feature.features.inc';

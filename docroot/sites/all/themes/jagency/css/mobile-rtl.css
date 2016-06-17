@@ -1,0 +1,54 @@
+/*@media only screen and (max-device-width: 420px) {*/
+@media only screen and (max-width: 768px) {
+
+    header .languages button:after { margin: 0 9px 0 0; }
+    .searchRow .search.ui-widget #search_submit { left: 72px !important; }
+    header .languages ul { right: -100px; }
+    .logoAndSearch .searchRow { width: 98% !important; }
+    .searchRow .search.ui-widget input { width: 96% !important; text-align: right; }
+    .search input[type=text] { margin-left: 4%; }
+
+    .logoAndSearch .searchBtn { border-right: solid 1px #ddd; }
+    .subscribe { margin-left: 2%; }
+    .lpGallery > a { float: right; }
+    .lpGallery > a:nth-child(odd) { margin-left: 2% !important; }
+    aside .nav li { padding-right: 15px; }
+    aside .nav li.active a { border-right: none !important; }
+    aside .nav li.active a:before { right: 15px; content: url("../images/navArrow-rtl.png"); }
+    aside .nav li a.sub { background-position: right 15px; }
+    .board { float: left; margin-left: 10%; margin-right: 0; }
+    .board a:after { right: 58px; }
+    .allPosts ul li > div { border-right: none !important; }
+    #gallery li .picText { right: 10px !important; }
+    .opportunities figure { float: right; }
+
+    .hompage-content-inside .col730 .picList230, 
+    .hompage-content-inside .col730 .picList480 { margin-right: 0px !important; }
+    .hompage-content-inside .col730 .picList230 li, 
+    .hompage-content-inside .col730 .picList480 li { margin-right: 0px !important; }
+    .hompage-content-inside .col730 .picList230 li { }
+    .gallery980 .button { margin-right: 0px !important; }
+    .panels-flexible-region-hompage-content-right-inside .picList230 li { margin-right: 0px !important; }
+    .blogs article section .footnote { left: 4px; }
+    #contributors li { float: right; margin-left: 5px; margin-right: 0px; }
+    .titleMenu { width: 65%; float: right; }
+
+    .picList480 { margin-left: 0px; }
+    .picList480 li { margin-left: 0px; }
+    .moreabout_with_stories .picList230 { margin-left: 0px !important; }
+    .picList230 { margin-left: 0px !important; }
+    .views-exposed-form .views-exposed-widget { padding: .5em 0 0 0; margin-left: 0; }
+    .picList230 li { width: 49%; height: auto !important; margin-left: 0; }
+    .picList230 li + li { margin-right: 0; }
+    .picList230 li:nth-child(odd) { margin-left: 2% !important; margin-right: 0px !important; }
+    .allPosts { width: 100% !important; }
+
+    .jspVerticalBar { left: 0px !important; }
+    #categories li { text-align: right; }
+    #categories, .jspContainer, .jspPane { margin-left: 0 !important; margin-right: 10px !important; }
+    .col480.Sul ul, 
+    .col730.Sul ul { padding-right: 0px !important; }
+
+    footer .top ul li { margin: 15px 0 0 22px; }
+    footer .nav dl dd { float: right; margin-left: 15px; }
+}

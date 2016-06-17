@@ -1,0 +1,54 @@
+name = Jewish Egency
+description = ''
+screenshot = screenshot.png
+engine = phptemplate
+core = 7.x
+
+; Panels layouts. You can place multiple layouts under the "layouts" folder.
+plugins[panels][layouts] = layouts
+
+features[] = logo
+features[] = favicon
+features[] = name
+features[] = slogan
+
+scripts[] = js/jquery-ui-1.9.2.custom.js
+scripts[] = js/vendor/jquery.anythingslider.js
+scripts[] = js/jquery.ui.touch-punch.js
+scripts[] = js/anythingSliderSwipe.js
+scripts[] = js/vendor/jquery.ui.selectmenu.js
+scripts[] = js/vendor/modernizr-2.6.2.min.js
+scripts[] = js/vendor/jquery.movingboxes.js
+scripts[] = js/jquery.masonry.js
+scripts[] = js/jquery.jscrollpane.min.js
+scripts[] = js/stickyfloat.js
+scripts[] = js/plugins.js
+scripts[] = js/main.js
+scripts[] = js/content_filter.js
+scripts[] = js/autocom.js
+scripts[] = js/mobile.js
+scripts[] = js/cms.js
+
+stylesheets[all][] = css/style.css
+stylesheets[all][] = css/custom.css
+stylesheets[all][] = css/jquery.jscrollpane.css
+stylesheets[all][] = css/anythingslider.css
+stylesheets[print][] = css/print.css
+stylesheets[all][] = css/mobile.css
+stylesheets[all][] = css/cms.css
+stylesheets[all][] = css/tooltips.css
+
+regions[header] = Header
+regions[navigation] = Navigation
+regions[banner] = Banner
+regions[search] = Search
+regions[preface] = Preface
+regions[topcontent] = Top Content
+regions[content] = Content
+regions[postscript] = Postscript
+regions[google_map] = Global impact footer
+regions[footer] = Footer
+regions[sidebar_first] = First Sidebar
+regions[sidebar_second] = Second Sidebar
+
+version = 1.x

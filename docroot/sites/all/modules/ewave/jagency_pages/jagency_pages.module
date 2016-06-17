@@ -1,0 +1,1491 @@
+<?php
+define('JEWISH_AGENCY_TAG_VOCABULARY', 1);
+
+/**
+ * Implement hook_menu() 
+ */
+function jagency_pages_menu() {
+  $items = array();
+  
+  $items['admin/config/jagency'] = array( 
+    'title' => 'Jewish Agency', 
+    'description' => 'Managing custom template setting', 
+    'position' => 'right', 
+    'weight' => -50, 
+    'page callback' => 'system_admin_menu_block_page', 
+    'access arguments' => array('administer site configuration'), 
+    'file' => 'system.admin.inc', 
+    'file path' => drupal_get_path('module', 'system'), 
+  );
+
+  $items['widget_output/agencywidget/%'] = array(
+    'page callback' => 'jagency_pages_widget_output', 
+    'page arguments' => array(2),
+    'delivery callback' => 'drupal_json_output',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  
+  $items['admin/config/jagency/footer_content'] = array( 
+    'title' => 'Footer HTML content', 
+    'description' => 'Managing footer html content.', 
+    'page callback' => 'drupal_get_form', 
+    'page arguments' => array('jagency_footerhtml_admin_settings_form'), 
+    'access arguments' => array('administer site configuration'), 
+    'type' => MENU_NORMAL_ITEM, 
+    'file' => 'jagency_pages.admin.inc', 
+  );
+  
+  /*$items['admin/config/jagency/mediafix'] = array( 
+    'title' => 'Media Fix', 
+    'description' => 'media fix.', 
+    'page callback' => 'jagency_mediafix', 
+    'access arguments' => array('administer site configuration'), 
+    'type' => MENU_NORMAL_ITEM, 
+    'file' => 'jagency_pages.admin.inc', 
+  );*/
+  
+  $items['admin/config/jagency/translater'] = array(
+    'title' => 'Translate',
+    'description' => '', 
+    'page callback' => 'jagency_translate_seek_screen', // search results and form concatenated
+    'page arguments' => array(4), 
+    'access arguments' => array('translate interface'),
+    'type' => MENU_NORMAL_ITEM, 
+    'file' => 'jagency_pages.admin.inc', 
+  );
+  
+  $items['admin/config/jagency/simpleviews'] = array(
+    'title' => 'Simpleviews Fix',
+    'description' => '', 
+    'page callback' => 'jagency_simpleviews_fix', // search results and form concatenated
+    'page arguments' => array(4), 
+    'access arguments' => array('administer site configuration'), 
+    'type' => MENU_NORMAL_ITEM, 
+    'file' => 'jagency_pages.admin.inc', 
+  );
+  
+  $items['admin/config/search/redirect/import'] = array(
+    'title' => 'Import Redirect',
+    'description' => '', 
+    'page callback' => 'drupal_get_form', // search results and form concatenated
+    'page arguments' => array('jagency_pages_redirect_import_form'), 
+    'access arguments' => array('administer site configuration'), 
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'jagency_pages.admin.inc', 
+  );
+  
+  return $items;
+}
+
+function jagency_pages_menu_alter(&$items) {
+  $items['admin/structure/menu-old/item/%menu_link/edit'] = $items['admin/structure/menu/item/%menu_link/edit'];
+  $items['admin/structure/menu/item/%menu_link/edit']['page arguments'] = array('jagency_pages_menu_edit_item', 'edit', 4, NULL);
+  $items['admin/structure/menu/item/%menu_link/edit']['file'] = 'jagency_pages.admin.inc';
+  $items['admin/structure/menu/item/%menu_link/edit']['file path'] = drupal_get_path('module', 'jagency_pages');
+  
+  //$items['admin/structure/menu/manage/%menu']['page arguments'] = array('jagency_pages_menu_overview_form', 4);
+  //$items['admin/structure/menu/manage/%menu']['file'] = 'jagency_pages.admin.inc';
+  //$items['admin/structure/menu/manage/%menu']['file path'] = drupal_get_path('module', 'jagency_pages');
+}
+
+/**
+ * Implement hook_theme() 
+ */
+function jagency_pages_theme($existing, $type, $theme, $path) {
+  $theme_path = path_to_theme();
+  return array(
+    'jagency_topcontent' => array(
+      'variables' => array(),
+      'path' => $theme_path . '/templates/block/',
+      'template' => 'jagency_topcontent'
+    ),
+    'jagency_topcontent_story' => array(
+      'variables' => array(),
+      'path' => $theme_path . '/templates/block/',
+      'template' => 'jagency_topcontent_story'
+    ),
+    'jagency_facebook_trending' => array(
+      'variables' => array(),
+      'path' => $theme_path . 'templates/block/',
+      'template' => 'jagency_facebook_trending'
+    ),
+    'jagency_article_image_block' => array(
+      'variables' => array('content' => NULL, 'node' => NULL),
+      'path' => $theme_path . 'templates/block/',
+      'template' => 'jagency_article_image_block'
+    ),
+    'jagency_article_content_block' => array(
+      'variables' => array('content' => NULL, 'node' => NULL),
+      'path' => $theme_path . 'templates/block/',
+      'template' => 'jagency_article_content_block'
+    ),
+  );
+}
+
+/**
+ * Implement hook_block_info()
+ *
+ * Generate HTML for the user_role_summary block
+ * @returns block HTML
+ */
+function jagency_pages_block_info() {
+  $blocks = array();
+  
+  $blocks['jagency_topcontent'] = array(
+    'info' => t('Top Jewish Agency Content')
+  );
+  
+  $blocks['jagency_facebook_trending'] = array(
+    'info' => t('Facebook Trending block')
+  );
+  
+  $blocks['jagency_super_block'] = array(
+    'info' => t('Jewish Agency Left Super Block')
+  );
+  
+  $blocks['jagency_categories_block'] = array(
+    'info' => t('Jewish Agency Categories Block')
+  );
+  
+  $blocks['jagency_users_block'] = array(
+    'info' => t('Jewish Agency User Block')
+  );
+  
+  $blocks['jagency_slider_block'] = array(
+    'info' => t('Agency Slider Block')
+  );
+  
+  $blocks['jagency_menu_block'] = array(
+    'info' => t('Agency Menu Block')
+  );
+  
+  $blocks['jagency_google_map_block'] = array(
+    'info' => t('Agency Google Map Block')
+  );
+  
+  $blocks['jagency_article_image_block'] = array(
+    'info' => t('Agency Article Image Block')
+  );
+  
+  $blocks['jagency_article_content_block'] = array(
+    'info' => t('Agency Article Content Block')
+  );
+  
+  return $blocks;
+}
+
+/**
+ * Implement hook_block_view()
+ *
+ * Generate HTML for the user_role_summary block
+ * @param op the operation from the URL
+ * @param delta offset
+ * @returns block HTML
+ */
+function jagency_pages_block_view($delta = 0) {
+  $block = array();
+  $menuitem = menu_get_item();
+  
+  switch ($delta){
+    case 'jagency_article_content_block':
+      $block['subject'] = '';
+      $node = new stdClass();
+      if ($menuitem['path'] == 'node/%' && isset($menuitem['page_arguments'][0]) && isset($menuitem['page_arguments'][0]->type) && $menuitem['page_arguments'][0]->type == 'article') {        
+        $node = $menuitem['page_arguments'][0];
+      } else if ($menuitem['path'] == 'panels/ajax') {
+        $nid = preg_replace('/panelizer:node:(.*?):default/', '\1', $menuitem['page_arguments'][2]);
+        $node = node_load($nid);
+      }
+      if (isset($node->nid)) {
+        $content = node_view($node, 'full');
+        $block['content'] = theme('jagency_article_content_block', array('content' => $content, 'node' => $node));
+      }
+      break;
+      
+    case 'jagency_article_image_block':
+      $block['subject'] = '';
+      $node = new stdClass();
+      if ($menuitem['path'] == 'node/%' && isset($menuitem['page_arguments'][0]) && isset($menuitem['page_arguments'][0]->type) && $menuitem['page_arguments'][0]->type == 'article') {        
+        $node = $menuitem['page_arguments'][0];
+      } else if ($menuitem['path'] == 'panels/ajax') {
+        $nid = preg_replace('/panelizer:node:(.*?):default/', '\1', $menuitem['page_arguments'][2]);
+        $node = node_load($nid);
+      }
+      if (isset($node->nid)) {
+        $content = node_view($node, 'full');
+        $vars = array('node' => $node, 'content' => $content);
+        jagency_video_builder($vars, 'field_main_image', 'image730x548');
+        $block['content'] = theme('jagency_article_image_block', array('content' => $vars['content'], 'node' => $node));
+      }
+      break;
+      
+    case 'jagency_topcontent':
+      $block['subject'] = '';
+      $block['content'] = jagency_top_args($menuitem);
+      break;
+      
+    case 'jagency_facebook_trending':
+      $block['subject'] = '';
+      $block['content'] = theme("jagency_facebook_trending", jqagency_pages_trendings($menuitem));
+      break;
+      
+    case 'jagency_super_block':
+      $block['subject'] = '';
+      $block['content'] = jagency_super_block_render($menuitem);
+      break;
+      
+    case 'jagency_categories_block':
+      $block['subject'] = '';
+      $block['content'] = jagency_categories_block($menuitem);
+      break;
+      
+    case 'jagency_users_block':
+      $block['subject'] = '';
+      $block['content'] = theme('jagency_authors_top', jagency_users_block($menuitem));
+      break;
+          
+    case 'jagency_slider_block':
+      $block['subject'] = '';
+      $block['content'] = jagency_slider_block_render($menuitem);
+      break;
+      
+    case 'jagency_menu_block':
+      $block['subject'] = '';
+      $block['content'] = jagency_menu_block_render($menuitem);
+      break;
+      
+    case 'jagency_google_map_block':
+      $block['subject'] = '';
+      $block['content'] = jagency_google_map_block_render($menuitem);
+      break;
+    
+  }
+  return $block;
+}
+
+/**
+ * Implementation of hook_views_api
+ */
+function jagency_pages_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'jagency_pages') . '/views',
+    'template path' => drupal_get_path('module', 'jagency_pages') . '/themes',
+  );
+}
+
+/**
+ * Implementation of hook media_token_to_markup
+ */
+function jagency_pages_media_token_to_markup_alter(&$element, &$tag_info, &$settings) {
+  switch($element['content']['file']['#file']->type) {
+    case 'image':
+      unset($element['content']['field_file_image_alt_text']);
+      unset($element['content']['field_link']);
+      unset($element['content']['field_file_image_title_text']);
+      $element['content']['file']['#theme'] = 'image_formatter_link';
+      if (!isset($element['content']['file']['#item'])) {
+        $element['content']['file']['#item'] = (array)$element['content']['file']['#file'];
+        $element['content']['file']['#item']['#style_name'] = $element['content']['file']['#style_name'];
+      } else if (isset($element['content']['file']['#image_style'])) {
+       $element['content']['file']['#item']['#style_name'] = $element['content']['file']['#image_style'];
+      }
+      break;
+  }
+}
+
+/**
+ * Slider block render
+ */
+function jagency_slider_block_render($menuitem) {
+  $path = parse_url($_SERVER['REQUEST_URI']);
+  $path = substr(check_plain($path['path']), 1);
+  $_path = explode('/', $path);
+  $last_url = array();
+  $arg1 = $arg2 = '';
+  
+  if (strlen($path) == 0) {
+    $path = 'front';
+  }
+  $path_args = array('*', $path);
+  
+  //no need to run on admin
+  if (isset($_path[0]) && $_path[0] == 'admin') {
+    return;
+  }
+  
+  //fetch items by path  
+  for($i = 0; $i < count($_path); $i++) {
+    if ($_path[$i]) {
+      $last_url[] = $_path[$i];
+      $path_args[] = implode('/', $last_url) . '/*';
+    }
+  }
+  $arg1 = str_replace('/', '\\', implode('+', $path_args));
+  //fetch by node reference
+  switch($menuitem['path']) {
+    case 'node/%':
+      $nids = jagency_pages_get_nids($menuitem['map'][1]);
+      if (is_array($nids)) {
+        $arg2 = implode('+', $nids);
+      }
+      break;
+  }
+  if ($arg2) {
+    $output = trim(views_embed_view('slider_location', 'panel_pane_3', $arg1, $arg2));
+  } else {
+    $output = trim(views_embed_view('slider_location', 'panel_pane_3', $arg1));
+  }
+  return $output;
+}
+
+/*
+ * Implementation of hook_node_api
+ */
+function jagency_pages_node_view($node, $view_mode, $langcode) {
+  switch($node->type) {
+    case 'blog':
+      $breadcrumb = array();           
+      $breadcrumb[] = l('<strong>' . t('The Jewish Agency') . '</strong>', '', array('html' => true));
+      drupal_set_breadcrumb($breadcrumb);
+      break;
+  }
+}
+
+/** 
+* Implements hook_entity_info_alter().
+*/
+function jagency_pages_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['global_teaser'] = array(
+    'label' => t('Global teaser'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['node']['view modes']['program_lobby_small'] = array(
+    'label' => t('Program Lobby Small'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['node']['view modes']['program_lobby_big'] = array(
+    'label' => t('Program Lobby Big'),
+    'custom settings' => TRUE,
+  );
+
+  $entity_info['node']['view modes']['global_teaser_big'] = array(
+    'label' => t('Global teaser Big'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['node']['view modes']['blog'] = array(
+    'label' => t('Blog'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['node']['view modes']['blog_category'] = array(
+    'label' => t('Blog Category'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['node']['view modes']['blog_category_first'] = array(
+    'label' => t('Blog Category First'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['node']['view modes']['blog_category_site'] = array(
+    'label' => t('Blog Category Site'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['user']['view modes']['block'] = array(
+    'label' => t('Block'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['user']['view modes']['block_first'] = array(
+    'label' => t('First Block'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['file']['view modes']['blog_entry_side_image'] = array(
+    'label' => t('Blog entry side image'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['file']['view modes']['blog_entry_content_image'] = array(
+    'label' => t('Blog Entry Content image'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['node']['view modes']['news_small'] = array(
+    'label' => t('News Small'),
+    'custom settings' => TRUE,
+  );
+
+  $entity_info['node']['view modes']['simple'] = array(
+    'label' => t('Simple'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['node']['view modes']['content_filter'] = array(
+    'label' => t('Content Filter'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['node']['view modes']['fullcontent'] = array(
+    'label' => t('Full Content Special'),
+    'custom settings' => TRUE,
+  );
+  
+  $entity_info['taxonomy_term']['uri callback'] = 'jagency_pages_taxonomy_term_uri';
+  
+  foreach (image_styles() as $key => $item) {
+    if (!isset($entity_info['file']['view modes'][$key])) {
+      $entity_info['file']['view modes'][$key] = array(
+        'label' => $item['label'],
+        'custom settings' => TRUE,
+      );
+    }
+  }
+}
+
+/**
+* Implements hook_preprocess_node().
+*/
+function jagency_pages_preprocess_node(&$vars) {
+  $thetitle = $vars['title'];
+  $vars['title'] = html_entity_decode($thetitle, ENT_QUOTES);
+  switch($vars['view_mode']) {
+    case 'blog':
+    case 'blog_category':
+    case 'blog_category_first':
+    case 'blog_category_site':
+    case 'news_small':
+    case 'program_lobby_small':
+    case 'program_lobby_big':
+    case 'global_teaser':
+    case 'global_teaser_big':
+    case 'content_filter':
+    case 'simple':
+    case 'fullcontent':
+      $vars['theme_hook_suggestions'][] = 'node__' . $vars['type'] . '_' . $vars['view_mode'];
+      break;
+  }
+}
+
+/**getting how long - from program details**/
+function time_elapsed_A($secs){
+  if (!$secs) {
+    return;
+  }
+  $bit = array(
+    'YEAR' => $secs / 29030400 % 12,
+    'WEEK' => $secs / 604800 % 52,
+    'DAY' => $secs / 86400 % 7
+    );
+    
+  foreach($bit as $k => $v)
+    if($v > 0)$ret[] = $v . ' ' . format_plural($v, $k, $k.'S'); ;
+    
+  return join(', ', $ret);
+}
+
+/**
+* Implements hook_preprocess_user_profile().
+*/
+function jagency_pages_preprocess_user_profile(&$vars) {
+  switch($vars['elements']['#view_mode']) {
+    case 'block':
+    case 'block_first':
+      $vars['theme_hook_suggestions'][] = 'user_profile__' . $vars['elements']['#view_mode'];
+      break;
+  }
+}
+
+function jagency_pages_wysiwyg_editor_settings_alter(&$settings, &$context) {
+  if ($context['profile']->editor == 'ckeditor') {
+    $path = drupal_get_path('module', 'jagency_pages');
+    drupal_add_js($path . '/media/ckeditor_fix.js');
+  }
+}
+
+/**
+ * Helper function to display header content
+ */
+function jagency_top_args($menuitem) {
+  $args = array();
+  $blog = new stdClass;
+  $rss_link = '';
+  $tpl = "jagency_topcontent";
+
+  if ($menuitem['page_callback'] == 'page_manager_page_execute') {
+    if (isset($menuitem['page_arguments'][1]) && isset($menuitem['page_arguments'][1]->data)) {
+      $blog = $menuitem['page_arguments'][1]->data;
+    } else {
+      switch($menuitem['page_arguments'][0]) {
+        case 'homepage':
+          break;
+        default:
+          //replace title with translation
+          $title = t(drupal_get_title());
+          drupal_set_title($title);
+          $args = array(
+            'title' => html_entity_decode(drupal_get_title(), ENT_QUOTES), 
+            'url' => '',
+            'intro' => '',
+            'rss_link' => null,
+            'mail_link' => 'javascript:GetSubscribe("' . $menuitem['page_arguments'][0] . '")',
+            'rss_link_args' => array('html' => true, 'attributes' => array('target' => '_blank', 'class' => array('rss'))),
+            'mail_link_args' => array('html' => true, 'attributes' => array('id' => 'subscriblink', 'class' => array('viaEmail')), 'external'=> true)
+          );
+          break;
+      }
+    }
+  } else if (isset($menuitem['page_arguments']) && isset($menuitem['page_arguments'][0]) && isset($menuitem['page_arguments'][0]->nid)) {
+    $blog = $menuitem['page_arguments'][0];
+  } else if (isset($menuitem['page_arguments']) && isset($menuitem['page_arguments'][0]) && $menuitem['page_arguments'][0] == 'agency_taxonomy_term') {
+    $feed_url = (count($menuitem['page_arguments']) == 3) ? current_path() . '/all/feed' : current_path() . '/feed';
+    $args = array(
+            'title' => html_entity_decode(drupal_get_title(), ENT_QUOTES), 
+            'url' => '',
+            'intro' => '',
+            'rss_link' => $feed_url,
+            'mail_link' => 'javascript:GetSubscribe("' . $menuitem['page_arguments'][0] . '")',
+            'rss_link_args' => array('html' => true, 'attributes' => array('target' => '_blank', 'class' => array('rss'))),
+            'mail_link_args' => array('html' => true, 'attributes' => array('id' => 'subscriblink', 'class' => array('viaEmail')), 'external'=> true)
+          );
+  }
+
+  if (isset($menuitem['map'][2])) {
+    switch ($menuitem['map'][2]) {
+      case 'tag':
+        if (isset($menuitem['map'][3]->data)) {
+          $rss_link = '/tag/' . $menuitem['map'][3]->data->tid;
+        }
+        break;
+      
+      case 'user':
+        if (isset($menuitem['map'][3]->data)) {
+          $rss_link = '/user/' . $menuitem['map'][3]->data->uid;
+        }
+        break;
+    }
+  }
+  if (isset($blog->type)) {
+    switch ($blog->type) {
+      case 'storys':
+        $field = field_view_field('node', $blog, 'field_program',  array('label'=>'hidden' ,'type' => 'plaintext'));
+        $program_field = render(field_view_field('node', $blog, 'field_program',  array('label'=>'hidden' ,'type' => 'entityreference_entity_id')));
+        $applyb = field_view_field('node', $blog, 'field_apply_link', array('label' => 'hidden', 'type' => 'plaintext'));
+        $sponsor = field_view_field('node', $blog, 'field_sponsor_link', array('label' => 'hidden', 'type' => 'plaintext'));
+        $args = array(
+          'title' => html_entity_decode($blog->title, ENT_QUOTES), 
+          'node_id' => $blog->nid,
+          'url' => 'node/' . $blog->nid,
+          'program' => l(html_entity_decode(strip_tags(render($field)), ENT_QUOTES), 'node/' . strip_tags($program_field),  array('attributes' => array('class' => 'link_text'))),
+          'apply_button' => render($applyb),
+          'sponsor_button' => render($sponsor),
+          'rss_link' => 'rss/blog/' . $blog->nid . $rss_link, 
+          'mail_link' => 'javascript:GetSubscribe(' . $blog->nid . ')',
+          'rss_link_args' => array('html' => true, 'attributes' => array('target' => '_blank', 'class' => array('rss'))),
+          'mail_link_args' => array('html' => true, 'attributes' => array('id' => 'subscriblink', 'class' => array('viaEmail')), 'external'=> true)
+        );
+        $tpl = "jagency_topcontent_story";
+        break;
+      case 'news_events_loby':
+      case 'event':
+      case 'news':
+      case 'article':
+      case 'content_lobby':
+        $args = array(
+          'title' => html_entity_decode($blog->title, ENT_QUOTES), 
+          'node_id' => $blog->nid,
+          'url' => 'node/' . $blog->nid,
+          'rss_link' => 'rss/blog/' . $blog->nid . $rss_link, 
+          'mail_link' => 'javascript:GetSubscribe(' . $blog->nid . ')',
+          'rss_link_args' => array('html' => true, 'attributes' => array('target' => '_blank', 'class' => array('rss'))),
+          'mail_link_args' => array('html' => true, 'attributes' => array('id' => 'subscriblink', 'class' => array('viaEmail')), 'external'=> true)
+        );
+        break;
+      case 'blog':
+        $field = field_view_field('node', $blog, 'body',  array('label'=>'hidden', 'type' => 'plaintext'));
+        $args = array(
+          'title' => html_entity_decode($blog->title, ENT_QUOTES), 
+          'node_id' => $blog->nid,
+          'url' => 'node/' . $blog->nid,
+          'intro' => render($field),
+          'rss_link' => 'rss/blog/' . $blog->nid . $rss_link, 
+          'mail_link' => 'javascript:GetSubscribe(' . $blog->nid . ')',
+          'rss_link_args' => array('html' => true, 'attributes' => array('target' => '_blank', 'class' => array('rss'))),
+          'mail_link_args' => array('html' => true, 'attributes' => array('id' => 'subscriblink', 'class' => array('viaEmail')), 'external'=> true)
+        );
+        break;
+        
+      case 'blog_entry':
+        $blog = field_view_field('node', $blog, 'field_blog');
+        $blog = array_pop($blog['#items']);
+        if (isset($blog['entity']->nid)) {
+          $field = field_view_field('node', $blog['entity'], 'body',  array('label'=>'hidden', 'type' => 'plaintext'));
+          $args = array(
+            'title' => html_entity_decode($blog['entity']->title, ENT_QUOTES),
+            'node_id' => $blog['entity']->nid,
+            'url' => 'node/' . $blog['entity']->nid,
+            'intro' => render($field), 
+            'rss_link' => 'rss/blog/' . $blog['entity']->nid . $rss_link,
+            'mail_link' => 'javascript:GetSubscribe(' . $blog['entity']->nid . ')',
+            'rss_link_args' => array('html' => true, 'attributes' => array('target' => '_blank', 'class' => array('rss'))),
+            'mail_link_args' => array('html' => true, 'attributes' => array('id' => 'subscriblink', 'class' => array('viaEmail')), 'external'=> true)
+          );
+        }
+        break;
+    }
+  }
+  $content = isset($args['title']) ? theme($tpl, $args) : '';
+  return $content;
+}
+
+/**
+ * Super block Helper function
+ */
+function jagency_super_block_render($menuitem) {
+  $output = '';
+  $request_uri = preg_replace('/(&amp;|&)domain=(.*)(&|)/', '', $_SERVER['REQUEST_URI']);
+  $path = str_replace('?' . $_SERVER['QUERY_STRING'], '', substr(check_plain($request_uri), 1));
+  $_path = explode('/', $path);
+  $last_url = array();
+  if (strlen($path) == 0) {
+    $path = 'front';
+  }
+  $path_args = array('*', $path);
+  
+  //no need to run on admin
+  if (isset($_path[0]) && $_path[0] == 'admin') {
+    return;
+  }
+  
+  //fetch items by path  
+  for($i = 0; $i < count($_path); $i++) {
+    if ($_path[$i]) {
+      $last_url[] = $_path[$i];
+      $path_args[] = implode('/', $last_url) . '/*';
+    }
+  }
+  $arg1 = str_replace('/', '\\', implode('+', $path_args));
+  $output .= trim(views_embed_view('content_location', 'panel_pane_2', $arg1));
+
+  //fetch by node reference
+  switch($menuitem['path']) {
+    case 'node/%':
+      $nids = jagency_pages_get_nids($menuitem['map'][1]);
+      if (is_array($nids)) {
+        $output .= trim(views_embed_view('content_location', 'panel_pane_1', implode('+', $nids)));
+      }
+      break;
+    case 'blog/%/user/%':
+    case 'blog/%/tag/%':
+      $nids = jagency_pages_get_nids($menuitem['map'][1]->data);
+      $output .= trim(views_embed_view('content_location', 'panel_pane_1', implode('+', $nids)));
+      break;
+  }
+  
+  return $output;
+}
+
+/**
+ * Helper function to get proper nids array
+ */
+function jagency_pages_get_nids($node) {
+  switch($node->type) {
+    case 'blog':
+      return array($node->nid);
+      break;
+    case 'blog_entry':
+      return array($node->nid, $node->field_blog[LANGUAGE_NONE][0]['target_id']);
+      break;
+  }
+}
+
+/**
+ * Helper function to get proper nid
+ */
+function jagency_pages_get_nid($node) {
+  switch($node->type) {
+    case 'blog':
+      return $node->nid;
+      break;
+    case 'blog_entry':
+      return $node->field_blog[LANGUAGE_NONE][0]['target_id'];
+      break;
+  }
+}
+
+/**
+ * Entity uri callback for taxonomy terms.
+ */
+function jagency_pages_taxonomy_term_uri($term) {
+  if ('tags' == $term->vocabulary_machine_name) {
+    $menuitem = menu_get_item();
+    $term = taxonomy_term_load($term->tid);
+    if (isset($menuitem['page_arguments'][0]) && is_object($menuitem['page_arguments'][0]) && $menuitem['page_arguments'][0]->nid) {
+      switch ($menuitem['page_arguments'][0]->type) {
+        case 'blog':
+        case 'blog_entry':
+          return array(
+            'path' => 'blog/' . jagency_pages_get_nid($menuitem['page_arguments'][0]) . '/tag/' . $term->tid
+          );
+          break;
+        default:
+          return array(
+            'path' => 'taxonomy/term/' . $term->tid,
+          );
+          break;
+      }
+    }
+  }
+  else {
+    return array(
+      'path' => 'taxonomy/term/' . $term->tid,
+    );
+  }
+}
+
+/**
+ * Helper function to get trending from facebook
+ */
+function jqagency_pages_trendings($menuitem) {
+  module_load_include('inc', 'jagency_pages', 'jagency_pages.phpquery');
+  $args = array('fb_trending' => '');
+  $website = variable_get('fb_trending_website', '');
+  $fb_app_id = variable_get('fb_application_id', '');
+  if ($website) {
+    $cachefile = file_stream_wrapper_get_instance_by_uri('public://')->realpath(). '/trendings.cache';
+    if (!file_exists($cachefile) || (time() - filemtime($cachefile)) > 3600) {
+      $options = array(
+        'http'=>array(
+          'method'=>"GET",
+          'header'=>"Accept-language: en\r\n" .
+            "Cookie: locale=en_US;\r\n" .
+            "User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10\r\n" // i.e. An iPad 
+        )
+      );
+      $context = stream_context_create($options);
+      //$url = 'http://www.facebook.com/plugins/activity.php?header=false&recommendations=true&site=' . urlencode($website) . '&font=verdana&width=230&height=400&app_id=' . $fb_app_id . '&locale=en_US&sdk=joey';
+      $url = 'http://www.facebook.com/plugins/activity.php?header=false&recommendations=true&site=' . urlencode($website) . '&font=verdana&width=230&height=400&locale=en_US&sdk=joey';      
+      $content = file_get_contents($url, false, $context);
+      $doc = phpQuery::newDocument($content);
+      foreach(pq('.pluginActivityRecommendationsItem') as $id => $element) {
+        pq($element)->find('a')->removeAttr('onmouseover')->removeAttr('onclick');
+        $href = pq($element)->find('a')->htmlOuter();
+        preg_match('/href="\/l.php\?u=(http[^\'"]+)(&amp;h)/i', $href, $matches);
+        pq($element)->find('a')->attr('href', rawurldecode($matches[1]));
+        $html = pq($element)->htmlOuter();
+        $args['fb_trending'][] = $html;
+        if (count($args['fb_trending']) > 5) {
+          break;
+        }
+      }
+      if (count($args['fb_trending']) > 1) {
+        file_put_contents($cachefile, serialize($args));
+      }
+    } else {
+      $args = unserialize(file_get_contents($cachefile));
+    }
+  }
+  return $args;
+}
+
+/**
+ * Helper function to fetch categories of specified blog
+ */
+function jagency_categories_block($menuitem) {
+  $output = '';
+  switch($menuitem['path']) {
+    case 'node/%':
+      $nids = jagency_pages_get_nids($menuitem['map'][1]);
+      switch($menuitem['map'][1]->type) {
+        case 'blog':
+          $output .= views_embed_view('categories', 'panel_pane_2', implode('+', $nids));
+          break;
+        default:
+          $output .= views_embed_view('categories', 'panel_pane_1', implode('+', $nids));
+          break;
+      }
+      break;
+    case 'blog/%/user/%':
+    case 'blog/%/tag/%':
+      $nids = jagency_pages_get_nids($menuitem['map'][1]->data);
+      $output .= views_embed_view('categories', 'panel_pane_2', implode('+', $nids));
+      break;
+  }
+  return $output;
+}
+
+function jagency_pages_content_filter_fix(&$item) {
+  if (is_array($item) || is_object($item)) {
+    foreach($item as $key => &$value) {
+      if (is_array($item) || is_object($item)) {
+        jagency_pages_content_filter_fix($value);
+      } else {
+        if (strpos($value, 'tid_multi') !== false) {
+          $value = str_replace('tid_multi', 'tid', $value);
+        }
+      }
+    }
+  } else {
+    if (strpos($item, 'tid_multi') !== false) {
+      $item = str_replace('tid_multi', 'tid', $item);
+    }
+  }
+  return;
+}
+
+/**
+ * Hook views query alter
+ */
+function jagency_pages_views_query_alter(&$view, &$query) {
+  switch ($view->name) {
+    case 'blog_search' :
+      //lets remove score from results due duplicated items
+      if (isset($query -> fields['score'])) {
+        unset($query -> fields['score']);
+      }
+      break;
+    case 'content_filter':
+      jagency_pages_content_filter_fix($query);
+      if (isset($query->table_queue['search_index'])) {
+        $query->table_queue['search_index']['join']->extra = array(array('field' => 'score', 'value' => '20', 'operator' => '>', 'numeric' => 1));
+      }
+      foreach ($query->where[1]['conditions'] as $key => $value) {
+        if (isset($value['field']) && is_object($value['field']) && get_class($value['field']) == 'DatabaseCondition') {
+          $temp = new fakeDatabaseCondition();
+          $temp->fakeClone($value['field']);
+          $temp->updateConditions();
+          //$temp->updateSearchScore();
+          $query->where[1]['conditions'][$key]['field'] = $temp;
+        }
+      }
+      break;
+    case 'opportunities':
+    //case 'content_filter':
+      if (isset($query->table_queue['search_index'])) {
+        $query->table_queue['search_index']['join']->extra = array(array('field' => 'score', 'value' => '20', 'operator' => '>', 'numeric' => 1));
+      }
+      $flag = false;
+      $counter = 1;
+      
+      if(!is_array($query->table_queue['search_index'])) {
+        foreach ($query->where as $key => $q_query) {
+          foreach ($q_query['conditions'] as $the_key => $the_value) {
+            if (isset($the_value['field']) && trim($the_value['field']) == 'field_data_field_program_tags.field_program_tags_target_id') {
+                $table = 'field_data_field_program_tags';
+                $query -> table_queue['field_data_field_program_tags' . $counter] = $query -> table_queue['field_data_field_program_tags'];
+                $table = 'field_data_field_program_tags_' . $counter;
+                $query -> table_queue['field_data_field_program_tags' . $counter]['alias'] = $table;
+              if ($flag) {
+                $tmp = $query -> where[$key]['conditions'][$the_key];
+                unset($query -> where[$key]['conditions'][$the_key]);
+                $max = count($query -> where[$key]['conditions']) + 1;
+                $query -> where[$key]['conditions'][$max]['value'] = $query -> where[$key]['conditions'][$max]['field'] = array();
+                foreach ($tmp['value'] as $k => $v) {
+                  $table = 'field_data_field_program_tags';
+                  $query -> table_queue['field_data_field_program_tags' . $counter] = $query -> table_queue['field_data_field_program_tags'];
+                  $table = 'field_data_field_program_tags_' . $counter;
+                  $query -> table_queue['field_data_field_program_tags' . $key2]['alias'] = $table;
+                  $query -> where[$key]['conditions'][$max]['field'] = $table . '.field_program_tags_target_id';
+                  $query -> where[$key]['conditions'][$max]['value'] = $v;
+                  $query -> where[$key]['conditions'][$max]['operator'] = '=';
+                  $max++;
+                  $counter++;
+                }
+              } else {
+                $query -> where[$key]['conditions'][$the_key]['field'] = $table . '.field_program_tags_target_id';
+                $flag = true;
+              }
+              $counter++;
+            }
+          }
+        }
+      }
+      //d($query);
+      /*
+      if (isset($view -> args)) {
+        if (isset($_SESSION['query_type']) && $_SESSION['query_type'] == 'query_and') {
+          if (preg_match('/the_tags/i', $view -> args[1])) {
+            foreach ($query->where as $key => $q_query) {
+              foreach ($q_query['conditions'] as $the_key => $the_value) {
+                if (isset($the_value['field']) && trim($the_value['field']) == 'field_data_field_program_tags.field_program_tags_target_id = :field_data_field_program_tags_field_program_tags_target_id') {
+                  $tmp = $view -> args[1] = str_replace('the_tags', '', $view -> args[1]);
+                  $query -> where[$key]['conditions'][$the_key]['value'] = $tmp;
+                  $value = explode(",", $tmp);
+                  if (is_array($value) && count($value)) {
+                    $query -> where[$key]['conditions'][$the_key]['value'] = $query -> where[$key]['conditions'][$the_key]['field'] = array();
+                    foreach ($value as $key2 => $val) {
+                      $table = 'field_data_field_program_tags';
+                      if ($key2 > 0) {
+                        $query -> table_queue['field_data_field_program_tags' . $key2] = $query -> table_queue['field_data_field_program_tags'];
+                        $table = 'field_data_field_program_tags_' . ($key2 + 1);
+                        $query -> table_queue['field_data_field_program_tags' . $key2]['alias'] = $table;
+                      }
+                      $query -> where[$key]['conditions'][$the_key]['field'][] = $table . '.field_program_tags_target_id IN (:field_data_field_program_tags_field_program_tags_target_id' . $key2 . ')';
+                      $query -> where[$key]['conditions'][$the_key]['value'][':field_data_field_program_tags_field_program_tags_target_id' . $key2] = explode('+', $val);
+                    }
+                    $query -> where[$key]['conditions'][$the_key]['field'] = implode(' AND ', $query -> where[$key]['conditions'][$the_key]['field']);
+                  }
+                }
+              }
+            }
+          }
+        }elseif (isset($_SESSION['query_type']) && $_SESSION['query_type'] == 'query_or') {
+          if (preg_match('/the_tags/i', $view -> args[1])) {
+            foreach ($query->where as $key => $q_query) {
+              foreach ($q_query['conditions'] as $the_key => $the_value) {
+                if (isset($the_value['field']) && trim($the_value['field']) == 'field_data_field_program_tags.field_program_tags_target_id = :field_data_field_program_tags_field_program_tags_target_id') {
+                  $tmp = $view -> args[1] = str_replace('the_tags', '', $view -> args[1]);
+                  $query -> where[$key]['conditions'][$the_key]['value'] = $tmp;
+                  $value = explode(",", $tmp);
+                  if (is_array($value) && count($value)) {
+                    $query -> where[$key]['conditions'][$the_key]['value'] = $query -> where[$key]['conditions'][$the_key]['field'] = array();
+                    foreach ($value as $key2 => $val) {
+                      $table = 'field_data_field_program_tags';
+                      if ($key2 > 0) {
+                        $query -> table_queue['field_data_field_program_tags' . $key2] = $query -> table_queue['field_data_field_program_tags'];
+                        $table = 'field_data_field_program_tags_' . ($key2 + 1);
+                        $query -> table_queue['field_data_field_program_tags' . $key2]['alias'] = $table;
+                      }
+                      $query -> where[$key]['conditions'][$the_key]['field'][] = $table . '.field_program_tags_target_id IN (:field_data_field_program_tags_field_program_tags_target_id' . $key2 . ')';
+                      $query -> where[$key]['conditions'][$the_key]['value'][':field_data_field_program_tags_field_program_tags_target_id' . $key2] = explode('+', $val);
+                    }
+                    $query -> where[$key]['conditions'][$the_key]['field'] = implode(' OR ', $query -> where[$key]['conditions'][$the_key]['field']);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }*/
+      break;
+  }
+}
+/**
+ * Hook query alter
+ */
+/*function jagency_pages_entity_query_alter($query) {
+  //EntityFieldQuery 
+  //$expressions =& $query->getExpressions();
+  $conditions = &$query->entityConditions;
+  $property =& $query->propertyConditions;
+  if (isset($conditions['bundle']['value']['program_details'])) {
+    d($property, $conditions, $query);
+  }
+  d(true, $query, $conditions['bundle']['value']);
+}*/
+
+/**
+ * Helper function to fetch categories of specified blog
+ */
+function jagency_users_block($menuitem) {
+  $args = array();
+  $output = '';
+  switch($menuitem['path']) {
+    case 'node/%':
+      $nids = jagency_pages_get_nids($menuitem['map'][1]);
+      switch($menuitem['map'][1]->type) {
+        case 'blog':
+          $output .= views_embed_view('authors_block', 'panel_pane_1');//, implode('+', $nids));
+          break;
+        default:
+          $output .= views_embed_view('authors_block', 'panel_pane_1');//, implode('+', $nids));
+          break;
+      }
+      break;
+    case 'blog/%/user/%':
+    case 'blog/%/tag/%':
+      $nids = jagency_pages_get_nids($menuitem['map'][1]->data);
+      $output .= views_embed_view('authors_block', 'panel_pane_1');//, implode('+', $nids));
+      break;
+  }
+  $args['author_list'] = $output;
+  return $args;
+}
+
+function jagency_pages_date_popup_process_alter(&$element, &$form_state, $context) {
+  unset($element['date']['#description']);
+  unset($element['time']['#description']);
+}
+
+function jagency_pages_mail_alter(&$message) {
+  if(isset($message['params']['node']->field_machine_name[LANGUAGE_NONE]) && $message['params']['node']->field_machine_name[LANGUAGE_NONE][0]['value'] == 'short_contact_us') {
+    if(isset($message['params']['submission']->data[1]['value'][0])) {
+      $nid = $message['params']['submission']->data[1]['value'][0];
+      $node = node_load($nid);
+      if (isset($node->field_program_mailto[LANGUAGE_NONE])) {
+        $email = $node->field_program_mailto[LANGUAGE_NONE][0]['value'];
+        if($email) {
+          $message['to'] = $email;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_library_alter().
+ */
+function jagency_pages_js_alter(&$js) {
+  drupal_add_js('jQuery.extend(Drupal.settings, { "pathToTheme": "' . path_to_theme() . '" });', 'inline');
+}
+
+/**
+ * Implement hook_node_validate
+ */
+function jagency_pages_node_validate($node, $form, &$form_state) {
+}
+
+/**
+ * Implement hook_form_views_exposed_form_alter
+ */
+function jagency_form_views_exposed_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'views_exposed_form') {
+    switch ($form['submit']['#id']) {
+      case 'edit-submit-opportunities':
+        $form['field_where_do_you_want_togo_target_id']['#options']['All'] = t('All');
+        $form['field_language_target_id']['#options']['All'] = t('All');
+        break;
+    }
+  }
+}
+
+/**
+ * Implement hook_from_alter
+ */
+function jagency_pages_form_alter(&$form, &$form_state, $form_id) {
+  $menuitem = menu_get_item();
+  if ($menuitem['page_callback'] == 'node_add' || $menuitem['path'] == 'node/%/edit') {
+    drupal_add_css(drupal_get_path('module', 'jagency_pages') . '/media/jagency_pages.css');
+  }
+  if(isset($form['weight']['weight_weight'])) {
+    unset($form['weight']['weight_weight']['#options']);
+    $form['weight']['weight_weight']['#type'] = 'textfield';
+  }
+  
+  switch ($form_id) {
+    case 'map_event_node_form':
+      drupal_add_js(drupal_get_path('module', 'jagency_pages') . '/media/jagency_pages.js');
+      drupal_add_js('https://maps.googleapis.com/maps/api/js?key=AIzaSyAxdV973M6q4u-urF5enz6WbHrdLDnc21Q&sensor=false', 'external');
+      $form['field_address']['#suffix'] = '<hr /><br />Status coordinates: <div class="status_coordinates"><small>Long: <span class="status_coordinates_long"></span><br />Lat: <span class="status_coordinates_lat"></span><br /></small></div><br /><button class="update_coordinates">Update coordinates</button><br /><br /><hr />';
+      break;
+    case 'content_block_node_form':
+      drupal_add_js(drupal_get_path('module', 'jagency_pages') . '/media/jagency_pages.js');
+      $content_types_list = array();
+      foreach (node_type_get_types() as $key => $value) {
+        $content_types_list[$key] = $value->name;
+      }
+      $output = '<div class="taxonomy_filter" style="display:none;"><fieldset class="collapsible field-group-fieldset form-wrapper">';
+      $output .= '<legend><span class="fieldset-legend">' . t('<b>Taxonomy links settings:</b>') . '<span class="summary"></span></span></legend>';
+      $output .= '<div class="fieldset-wrapper"><div class="field-widget-select2widget form-wrapper"><label>' . t('<strong>Choose content type</strong>') . '</label><select name="content_types" id="content_type_list" class="form-select" multiple>';
+      foreach ($content_types_list as $content_key => $content_name) {
+        $output .= '<option value="' . $content_key . '" ' . $selected . '>' . $content_name . '</option>';
+      }
+      $output .= '</select></div></div></fieldset></div>';
+      $form['field_block_type']['#suffix'] = $output;
+      $form['field_program_tags']['#prefix'] = '<div style="display:none;">';
+      $form['field_program_tags']['#suffix'] = '</div>';
+      break;
+    case 'path_admin_form':
+      $form['#validate'] = array('jagency_pages_path_admin_form_validate');
+      break;
+    case 'article_node_form':
+      drupal_add_js(drupal_get_path('module', 'jagency_pages') . '/media/jagency_pages.js');
+      break;
+    case 'menu_overview_form':
+      $form['#submit'][] = 'jagency_pages_menu_overview_form';
+      break;
+    case 'agents_list_node_form':
+      drupal_add_js(drupal_get_path('module', 'jagency_pages') . '/media/jagency_pages.js');
+      $form['field_aliah_city']['#prefix'] = '<div class="field_aliah_city">';
+      $form['field_aliah_city']['#suffix'] = '</div>';
+      break;
+    case 'file_entity_edit':
+      drupal_add_js(drupal_get_path('module', 'jagency_pages') . '/media/jagency_pages.js');
+      $tmp = t($form['preview']['#alt'], array(), array('langcode' => 'english'));
+      $tmp = t($form['preview']['#title'], array(), array('langcode' => 'english'));
+      if (isset($form['preview']['#file']->field_copyright[LANGUAGE_NONE])) {
+        $tmp = t($form['preview']['#file']->field_copyright[LANGUAGE_NONE][0]['safe_value'], array(), array('langcode' => 'english'));
+      }
+      if (isset($form['preview']['#file']->field_photographer[LANGUAGE_NONE])) {
+        $tmp = t($form['preview']['#file']->field_photographer[LANGUAGE_NONE][0]['safe_value'], array(), array('langcode' => 'english'));
+      }
+      break;
+    case 'file_entity_add_upload':
+      drupal_add_js(drupal_get_path('module', 'jagency_pages') . '/media/media_preview.js');
+    break;
+   case 'career_node_form':
+     drupal_add_js(drupal_get_path('module', 'jagency_pages') . '/media/jagency_pages.js');
+     drupal_add_css(drupal_get_path('module', 'jagency_pages') . '/media/jagency_pages.css');
+     $form['field_taxonomy_city']['#weight'] = $form['field_taxonomy_region']['#weight'] + 1;
+     $form['field_taxonomy_city']['#prefix'] = '<div class="field_taxonomy_city">';
+     $form['field_taxonomy_region']['#prefix'] = '<div class="field_taxonomy_region">';
+     $form['field_taxonomy_city']['#suffix'] = $form['field_taxonomy_region']['#suffix'] = '</div>';
+     //d($form['field_taxonomy_city'], $form['field_taxonomy_region']);
+     break;
+   
+   case 'content_filter_node_form':
+     drupal_add_js(drupal_get_path('module', 'jagency_pages') . '/media/jagency_pages.js');
+     $content_types_list = array();
+     foreach (node_type_get_types() as $key => $value) {
+       $content_types_list[$key] = $value->name;
+     }
+     $output = '';
+     $output .= '<select name="Content_types" id="content_type_list" style="height: 100px; width: 250px;" multiple>';
+     foreach ($content_types_list as $content_key => $content_name) {
+       $output .= '<option value="' . $content_key . '" ' . $selected . '>' . $content_name . '</option>';
+     }
+     $output .= '</select>';
+     $form['field_content_type']['#prefix'] = '<div style="display: none;">';
+     $form['field_content_type']['#suffix'] = '</div>' . t('<b>Main content type: </b>'). '<br />' . $output;
+     break;
+   case 'storys_promotion_node_form':
+     $form['title']['#suffix'] = theme('image', array('path' => drupal_get_path('module', 'jagency_pages') .  '/media/howto_style.png'));
+     break;
+   case 'google_map_node_form':
+   case 'custom_menu_node_form':
+   case 'content_location_node_form':
+   case 'slider_node_form':
+      //d($form_state['node']);
+      if (isset($form['field_location'])) {
+        foreach($form['field_location'][LANGUAGE_NONE] as $key => $val) {
+          if (isset($form['field_location'][LANGUAGE_NONE][$key]['value']['#default_value'])) {
+            $form['field_location'][LANGUAGE_NONE][$key]['value']['#default_value'] = str_replace('\\', '/', $form['field_location'][LANGUAGE_NONE][$key]['value']['#default_value']);
+          }
+        }
+      }
+      $form['#submit'] = array_merge($form['#submit'], array(0 => 'jagency_pages_location_submit'));
+      break;
+      
+   case 'views_exposed_form':
+    switch ($form['submit']['#id']) {
+      case 'edit-submit-content-filter':
+        foreach($_GET as $key => $value) {
+          if (strpos($key, 'vocabluary_id_') !== false) {
+            if ($value) {
+              $form['field_program_tags_target_id']['#default_value'][] = $value;
+            }
+          }
+          if ($key == 'free_search_content') {
+            $form['keys']['#default_value'] = $value;
+          }
+        }
+        break;
+      case 'edit-submit-more-news-events':
+        foreach ($form['field_main_category_target_id']['#options'] as $key => $value) {
+          if (is_numeric($key)) {
+            $form['field_main_category_target_id']['#options'][$key] = jagency_taxonomy_translate($key, $value);
+          }
+        }
+        foreach ($form['field_aticle_type_target_id']['#options'] as $key => $value) {
+          if (is_numeric($key)) {
+            $form['field_aticle_type_target_id']['#options'][$key] = jagency_taxonomy_translate($key, $value);
+          }
+        }
+        break;
+      case 'edit-submit-admin-views-node':
+        drupal_add_js(drupal_get_path('module', 'jagency_pages') . '/media/jagency_pages.js');
+        drupal_add_css(drupal_get_path('module', 'jagency_pages') . '/media/jagency_pages.css');
+        $form['tid_raw']['#type'] = "select";
+        $options = array('' => t(' - Any - '));
+        foreach($form['vid']['#options'] as $vid => $text) {
+          if (is_numeric($vid)) {
+            $terms = taxonomy_get_tree($vid);
+            foreach($terms as $item) {
+              $options[$item->tid] = $vid . '::' . $item->name;
+            }
+          }
+        }
+        $terms = taxonomy_get_tree();
+        $form['tid_raw']['#options'] = $options;
+        unset($form['tid_raw']['#size']);
+        break;
+        
+      case 'edit-submit-agency-views-field-dynamic-view':
+        global $language;
+        if (!function_exists('jagency_taxonomy_translate')) {
+          include_once(DRUPAL_ROOT . '/' . drupal_get_path('theme', 'jagency') . "/template.php");
+        }
+        $form['#action'] = url(current_path());
+        if (isset($form['tid']) && isset($form['tid']['#options']) && count($form['tid']['#options'])) {
+          foreach ($form['tid']['#options'] as $key => $value) {
+            if (is_numeric($key)) {
+              $form['tid']['#options'][$key] = jagency_taxonomy_translate($key, $value);
+            }
+          }
+        }
+        break;
+      
+      case 'edit-submit-opportunities':
+        foreach ($form['field_program_icons_value']['#options'] as $key => $value) {
+          $form['field_program_icons_value']['#options'][$key] = t($value);
+        }
+        foreach ($form['field_time_of_year_value']['#options'] as $key => $value) {
+          $form['field_time_of_year_value']['#options'][$key] = t($value);
+        }
+        foreach ($form['field_language_target_id']['#options'] as $key => $value) {
+          $form['field_language_target_id']['#options'][$key] = t($value);
+        }
+        foreach($_GET as $key => $value) {
+          if (isset($form[$key])) {
+            $form[$key]['#default_value'] = array($value);
+          }
+        }
+        break;
+    }
+    break;
+  }
+}
+
+function jagency_pages_path_admin_form_validate($form, &$form_state) {
+  $source = &$form_state['values']['source'];
+  $source = drupal_get_normal_path($source);
+  $alias = $form_state['values']['alias'];
+  $pid = isset($form_state['values']['pid']) ? $form_state['values']['pid'] : 0;
+  // Language is only set if locale module is enabled, otherwise save for all languages.
+  $language = isset($form_state['values']['language']) ? $form_state['values']['language'] : LANGUAGE_NONE;
+
+  /*$has_alias = db_query("SELECT COUNT(alias) FROM {url_alias} WHERE pid <> :pid AND alias = :alias AND language = :language", array(
+      ':pid' => $pid,
+      ':alias' => $alias,
+      ':language' => $language,
+    ))
+    ->fetchField();
+
+  if ($has_alias) {
+    form_set_error('alias', t('The alias %alias is already in use in this language.', array('%alias' => $alias)));
+  }*/
+  if (!drupal_valid_path($source)) {
+    form_set_error('source', t("The path '@link_path' is either invalid or you do not have access to it.", array('@link_path' => $source)));
+  }
+}
+
+/**
+ * Helper function
+ */
+function jagency_pages_location_submit($form, &$form_state) {
+  if (isset($form_state['values']['field_location'])) {
+    foreach($form_state['values']['field_location'][LANGUAGE_NONE] as $key => $val) {
+      $form_state['values']['field_location'][LANGUAGE_NONE][$key]['value'] = str_replace('/', '\\', $val['value']);
+    }
+  }
+}
+
+function jagency_blocks_list($field_name, $array) {
+  if(isset($field_name) && isset($array)) {
+   if(in_array($field_name, $array)) {
+     return true;
+   }
+  }
+}
+
+function jagency_pages_node_presave($node) {
+  switch ($node->type) {
+    case 'program_details':
+      $wrapper = entity_metadata_wrapper('node', $node->nid);
+      if(isset($wrapper->field_airfare_cost)) {
+      $prices =  $wrapper->field_airfare_cost->value() + $wrapper->field_meals_cost->value()  + $wrapper->field_lodging_cost->value();
+      }
+      if(isset($wrapper->field_start_date)) {
+      $timeobj = $wrapper->field_start_date->value();
+      $time = strtotime($timeobj['value2']) - strtotime($timeobj['value']);
+      $node->field_how_long[LANGUAGE_NONE][0]['value'] = $time;
+      }
+    break;
+  }
+}
+
+/**
+ * Adding support for term to menu
+ * Needed for fetching menu items
+*/
+ 
+function jagency_pages_menu_attribute_info() {
+  $items[NULL] = t('Not in use');
+
+  $vocabularies = taxonomy_get_vocabularies();
+  foreach ($vocabularies as $vocab) {
+    if ($vocab->vid != 1) {
+      $terms = taxonomy_get_tree($vocab->vid);
+      foreach($terms as $term){
+        $items[$term->tid]= $vocab->name . ' » ' . $term->name;
+      }
+    }
+  }
+
+  // Add a Tabindex attribute.
+  $info['term'] = array(
+    'label' => t('Taxonomy term'),
+    'description' => t('Choose wanted term from the list'),
+    'form' => array(
+      '#type' => 'select',
+      '#options' => $items,
+    ),
+  );
+  return $info;
+}
+
+/**
+ * Implements hook_node_update
+ *
+ * Adds a filter for the current domain.
+ */
+function jagency_pages_node_insert($node) {
+  if (isset($node->nid) && $node->nid) {
+    $wraper = entity_metadata_wrapper('node', $node->nid);
+    if ($node->type == 'program_details') {
+      if (count($node->field_program['und'])) {
+        $term = str_replace(' ', '-', strtolower($wraper->field_main_category->value()->name));
+        $parent = $wraper->field_program->value();
+        $path = $term . '/program/' . $parent->nid . '/programs/' . $node->nid;
+        $node->path['alias'] = $path;
+        return $node;
+      }
+    } elseif($node->type != 'program_details' && isset($wraper->field_main_category)) {
+      $term = str_replace(' ', '-', strtolower($wraper->field_main_category->value()->name));
+      $path = $term . '/' . $node->nid;
+      $node->path['alias'] = $path;
+      return $node;
+    }
+  }
+}
+
+function jagency_menu_block_render($menuitem) {
+  $path = parse_url($_SERVER['REQUEST_URI']);
+  $path = urldecode(substr(check_plain($path['path']), 1));
+  $_path = explode('/', $path);
+  $last_url = array();
+  $arg1 = $arg2 = '';
+  
+  if (strlen($path) == 0) {
+    $path = 'front';
+  }
+  $path_args = array('*', $path);
+  
+  //no need to run on admin
+  if (isset($_path[0]) && $_path[0] == 'admin') {
+    return;
+  }
+  
+  //fetch items by path  
+  for($i = 0; $i < count($_path); $i++) {
+    if ($_path[$i]) {
+      $last_url[] = $_path[$i];
+      $path_args[] = implode('/', $last_url) . '/*';
+    }
+  }
+  $arg1 = str_replace('/', '\\', implode('+', $path_args));
+  //fetch by node reference
+  switch($menuitem['path']) {
+    case 'node/%':
+      $nids = jagency_pages_get_nids($menuitem['map'][1]);
+      if (is_array($nids)) {
+        $arg2 = implode('+', $nids);
+      }
+      break;
+  }
+  if ($arg2) {
+    $output = trim(views_embed_view('menu_location', 'panel_pane_3', $arg1, $arg2));
+  } else {
+    $output = trim(views_embed_view('menu_location', 'panel_pane_3', $arg1));
+  }
+  return $output;
+}
+
+/**
+ * Media youtube fix
+ */
+function jagency_pages_file_type($file) {
+  if ($file->filemime == 'video/youtube') {
+    return 'video';
+  }
+}
+
+/**
+ * Google map block render
+ */
+function jagency_google_map_block_render($menuitem) {
+  $path = parse_url($_SERVER['REQUEST_URI']);
+  $path = substr(check_plain($path['path']), 1);
+  $_path = explode('/', $path);
+  $last_url = array();
+  $arg1 = $arg2 = '';
+  
+  if (strlen($path) == 0) {
+    $path = 'front';
+  }
+  $path_args = array('*', $path);
+  
+  //no need to run on admin
+  if (isset($_path[0]) && $_path[0] == 'admin') {
+    return;
+  }
+  
+  //fetch items by path  
+  for($i = 0; $i < count($_path); $i++) {
+    if ($_path[$i]) {
+      $last_url[] = $_path[$i];
+      $path_args[] = implode('/', $last_url) . '/*';
+    }
+  }
+  $arg1 = str_replace('/', '\\', implode('+', $path_args));
+  //fetch by node reference
+  switch($menuitem['path']) {
+    case 'node/%':
+      $nids = jagency_pages_get_nids($menuitem['map'][1]);
+      if (is_array($nids)) {
+        $arg2 = implode('+', $nids);
+      }
+      break;
+  }
+  if ($arg2) {
+    $output = trim(views_embed_view('map_location', 'panel_pane_3', $arg1, $arg2));
+  } else {
+    $output = trim(views_embed_view('map_location', 'panel_pane_3', $arg1));
+  }
+  return $output;
+}
+
+/**
+ * Helper function to updte menu items that include ../ to extrernal
+ */
+function jagency_pages_menu_overview_form() {
+  db_update('menu_links')->fields(array('external' => '1'))->condition('link_path', '%' . db_like('../') . '%', 'LIKE')->execute();
+}
+
+/***
+ * Helper class to solve protected variables in DatabaseCondition
+ */
+class fakeDatabaseCondition extends DatabaseCondition {
+  public function fakeClone(DatabaseCondition $item) {
+    foreach ($item->conditions() as $key => $cond) {
+      $this->conditions[$key] = $cond;
+    }
+  }
+  
+  public function updateSearchScore() {
+    $replace = array('field' => 'search_index.score', 'value' => '10', 'operator' => '=>');
+    foreach($this->conditions as $key => $value) {
+      if (is_array($value) && isset($value['field']) && is_string(( $value['field'])) && $value['field'] == 'search_index.type') {
+        array_splice($this->conditions, ($key + 1), 0, $replace);
+      }
+    }
+  }
+  
+  public function updateConditions() {
+    foreach($this->conditions as $key => &$value) {
+      if (is_array($value)) {
+        foreach($value as $k => &$v) {
+          if (is_string($v) && $k == 'field') {
+            $v = str_replace('tid_multi', 'tid', $v);
+          }
+        }
+      }
+    }
+  }
+}

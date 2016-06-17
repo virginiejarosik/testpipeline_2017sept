@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the jagency_content_filter feature.
+ */
+
+include_once 'jagency_content_filter.features.inc';

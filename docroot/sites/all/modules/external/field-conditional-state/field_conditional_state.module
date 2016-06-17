@@ -1,0 +1,358 @@
+<?php
+/**
+ * @file
+ * Main functions of this module.
+ */
+
+/**
+ * Returns the conditional states which match the given conditions.
+ *
+ * @param string $entity_type
+ *   the entity type
+ * @param string $bundle
+ *   the bundle
+ * @param string $field_name
+ *   the field_name
+ *
+ * @return array
+ *   array of conditional states (as associative arrays)
+ */
+function _field_conditional_state_get_conditional_states($entity_type, $bundle, $field_name) {
+  // Check for cached results.
+  $records = &drupal_static(__FUNCTION__);
+  if (empty($records)) {
+    $records = array();
+  }
+
+  if (isset($records[$entity_type][$bundle][$field_name])) {
+    return $records[$entity_type][$bundle][$field_name];
+  }
+  else {
+    $query = db_select('field_conditional_states_groups', 'g');
+    $query->fields('g');
+    $query->condition('entity_type', $entity_type);
+    $query->condition('bundle', $bundle);
+    $query->condition('field_name', $field_name);
+    $groups = $query->execute();
+
+    $data = array();
+    while ($group = $groups->fetchAssoc()) {
+      $tmp = &$data[];
+      $tmp = $group;
+      $tmp['states'] = array();
+
+      $query = db_select('field_conditional_states', 's');
+      $query->fields('s');
+      $query->condition('group_id', $group['group_id']);
+      $states = $query->execute();
+      while ($state = $states->fetchAssoc()) {
+        $tmp['states'][] = $state;
+      }
+
+    }
+    $records[$entity_type][$bundle] = $data;
+    return $data;
+  }
+}
+
+/**
+ * Returns a field suffix that will be appended to the fcs elements.
+ *
+ * To be able to differentiate between multiple instances
+ * of one field in a form (field collections, etc)
+ * it is necessary to create this suffix.
+ *
+ * @param array $element
+ *   a form element
+ *
+ * @return string
+ *   the suffix
+ */
+function _field_conditional_state_get_field_suffix($element) {
+  static $processed_fields = array();
+  static $index_prefix = array();
+
+  $parent_id = $element['#entity_type'] . '__' . $element['#bundle'];
+
+  $parent_index = NULL;
+  if (!isset($processed_fields[$parent_id])) {
+    $processed_fields[$parent_id] = array();
+    $index_prefix[$parent_id] = count($index_prefix);
+  }
+
+  if (!isset($processed_fields[$parent_id][$element['#field_name']])) {
+    $parent_index = $processed_fields[$parent_id][$element['#field_name']] = 0;
+  }
+  else {
+    $parent_index = ++$processed_fields[$parent_id][$element['#field_name']];
+  }
+  return $index_prefix[$parent_id] . $parent_index;
+}
+
+
+/**
+ * Adds the #states to the form elements and prepares the validation.
+ *
+ * @param array $element
+ *   a form element
+ * @param array $form_state
+ *   the current form state
+ * @param array $form
+ *   the complete form
+ *
+ * @return array
+ *   the processed element
+ */
+function field_conditional_state_element_process($element, &$form_state, &$form) {
+  if (isset($element['#entity_type']) && isset($element['#bundle']) && isset($element['#field_name'])) {
+    $element['#field_conditional_state_id'] = _field_conditional_state_get_field_suffix($element);
+    $states = _field_conditional_state_get_conditional_states($element['#entity_type'], $element['#bundle'], $element['#field_name']);
+    _field_conditional_state_build_states_array($element, $states);
+
+    $is_dependent = isset($element['#states']) && count($element['#states']);
+    if ($is_dependent) {
+      if (empty($element['#type'])) {
+        if (empty($element['#pre_render'])) {
+          $element['#pre_render'] = array();
+        }
+        $element['#pre_render'][] = '_field_conditional_state_add_id_container';
+      }
+    }
+
+    $element['#prefix'] = '<div id="' . $element['#field_name'] . '_field_conditional_state_control_' . $element['#field_conditional_state_id'] . '">';
+    $element['#suffix'] = "</div>";
+    $form_state['#field_conditional_state_parents'][$element['#field_name'] . $element['#field_conditional_state_id']] = $element['#parents'];
+
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function field_conditional_state_menu() {
+  $items = array();
+  foreach (entity_get_info() as $entity_type => $entity_info) {
+    if ($entity_info['fieldable']) {
+      foreach ($entity_info['bundles'] as $bundle_name => $bundle_info) {
+        if (isset($bundle_info['admin'])) {
+          // Extract path information from the bundle.
+          $path = $bundle_info['admin']['path'];
+          if (isset($bundle_info['admin']['bundle argument'])) {
+            $bundle_arg = $bundle_info['admin']['bundle argument'];
+            $bundle_pos = (string) $bundle_arg;
+          }
+          else {
+            $bundle_arg = $bundle_name;
+            $bundle_pos = '0';
+          }
+          $field_position = count(explode('/', $path)) + 1;
+
+          $items[$path . '/fields/%field_ui_menu/field_conditional_state'] = array(
+            'load arguments' => array(
+              $entity_type,
+              $bundle_arg,
+              $bundle_pos,
+              '%map',
+            ),
+            'title' => 'Conditional states',
+            'page callback' => 'drupal_get_form',
+            'page arguments' => array(
+              'field_conditional_state_settings_form',
+              $field_position,
+            ),
+            'type' => MENU_LOCAL_TASK,
+            'access arguments' => array('administer field_conditional_state'),
+            'weight' => 4,
+            'file' => 'field_conditional_state.admin.inc',
+          );
+        }
+      }
+    }
+  }
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function field_conditional_state_permission() {
+  return array(
+    'administer field conditional states' => array(
+      'title' => t('Administer field conditional states'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ *
+ * Ensures the call to
+ * field_conditional_state_link_form_field_ui_field_overview_form_alter()
+ * function runs after any invocation of the form_alter() by other modules, e.g.
+ * Field Group module.
+ */
+function field_conditional_state_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'form_alter' && array_key_exists('field_conditional_state', $implementations)) {
+    $group = $implementations['field_conditional_state'];
+    unset($implementations['field_conditional_state']);
+    $implementations['field_conditional_state'] = $group;
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for field_ui_field_overview_form().
+ */
+function field_conditional_state_form_field_ui_field_overview_form_alter(&$form, &$form_state) {
+  $entity_type = $form['#entity_type'];
+  $bundle = $form['#bundle'];
+
+  $bundle = field_extract_bundle($entity_type, $bundle);
+  $admin_path = _field_ui_bundle_admin_path($entity_type, $bundle);
+
+  $table = &$form['fields'];
+
+  // Find the operations column and number of existing operations, because
+  // other modules may alter the form to add operations before or after us.
+  foreach ($table['#header'] as $key => $header) {
+    if (is_array($header) && !empty($header['data'])) {
+      $op_col = $key;
+      $op_count = $header['colspan'];
+    }
+  }
+  // Increment the colspan.
+  $table['#header'][$op_col]['colspan'] = $op_count + 1;
+
+  $instances = field_info_instances($entity_type, $bundle);
+
+  foreach (element_children($table) as $key) {
+    if (array_key_exists($key, $instances)) {
+      $admin_field_path = $admin_path . '/fields/' . $instances[$key]['field_name'];
+      $table[$key]['field_conditional_states'] = array(
+        '#type' => 'link',
+        '#title' => t('States'),
+        '#href' => $admin_field_path . '/field_conditional_state',
+        '#options' => array('attributes' => array('title' => t('Manage field conditional state rules.'))),
+      );
+    }
+    else {
+      $table[$key]['field_conditional_states'] = array('#markup' => '');
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function field_conditional_state_field_widget_form_alter(&$element, &$form_state, $context) {
+  // Number fields elements are located in $element['value']... Why?
+  if ($context['instance']['widget']['type'] == 'number') {
+    $element['value']['#process'][] = 'field_conditional_state_element_process';
+  }
+  else {
+    $element['#process'][] = 'field_conditional_state_element_process';
+  }
+
+}
+
+/**
+ * This is a #pre_render callback function.
+ *
+ * Adds a container with the given ID to elements that are dependent
+ * and where the ID would otherwise not be rendered
+ */
+function _field_conditional_state_add_id_container($elements) {
+  $elements['#prefix'] = '<div id="' . $elements['#id'] . '">';
+  $elements['#suffix'] = '</div>';
+  return $elements;
+}
+
+/**
+ * Adds the #states subarray to the given element based on the given conditions.
+ */
+function _field_conditional_state_build_states_array(&$element, $groups) {
+  if (count($groups) > 0) {
+    $element['#states'] = array();
+
+    foreach ($groups as $group) {
+      if (empty($element['#states'][$group['state']])) {
+        $element['#states'][$group['state']] = array();
+      }
+
+      switch ($group['type']) {
+        case 'and':
+          foreach ($group['states'] as $state) {
+            if ($state['trigger_state'] == 'value') {
+              $trigger = array($state['trigger_state'] => $state['trigger_value']);
+            }
+            else {
+              $trigger = array($state['trigger_state'] => TRUE);
+            }
+            $element['#states'][$group['state']]['#' . $state['control_field'] . '_field_conditional_state_control_' . $element['#field_conditional_state_id'] . ' input'] = $trigger;
+          }
+          break;
+
+        case 'or':
+          $current = &$element['#states'][$group['state']][];
+          $current = array();
+          foreach ($group['states'] as $state) {
+            if ($state['trigger_state'] == 'value') {
+              $trigger = array($state['trigger_state'] => $state['trigger_value']);
+            }
+            else {
+              $trigger = array($state['trigger_state'] => TRUE);
+            }
+            $tmp = &$current[];
+            $tmp['#' . $state['control_field'] . '_field_conditional_state_control_' . $element['#field_conditional_state_id'] . ' input'] = $trigger;
+          }
+          break;
+
+        case 'xor':
+          $current = &$element['#states'][$group['state']][];
+          $current = array('xor');
+          foreach ($group['states'] as $state) {
+            if ($state['trigger_state'] == 'value') {
+              $trigger = array($state['trigger_state'] => $state['trigger_value']);
+            }
+            else {
+              $trigger = array($state['trigger_state'] => TRUE);
+            }
+            $tmp = &$current[];
+            $tmp['#' . $state['control_field'] . '_field_conditional_state_control_' . $element['#field_conditional_state_id'] . ' input'] = $trigger;
+          }
+          break;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_delete_instance().
+ */
+function field_conditional_state_field_delete_instance($instance) {
+  $args = array(
+    ':type' => $instance['entity_type'],
+    ':bundle' => $instance['bundle'],
+  );
+  $q = db_query("SELECT group_id, field_name FROM {field_conditional_states_groups} WHERE entity_type = :type AND bundle = :bundle", $args);
+
+  while ($record = $q->fetchAssoc()) {
+    $del = db_delete('field_conditional_states');
+    $del->condition('group_id', $record['group_id']);
+
+    // If the current groups field name is equal to the deleted field name
+    // delete the group and ALL associated states
+    // otherwise delete only the conditions
+    // where the deleted field is the control field.
+    if ($record['field_name'] == $instance['field_name']) {
+      $del_group = db_delete('field_conditional_states_groups');
+      $del_group->condition('group_id', $record['group_id']);
+      $del_group->execute();
+    }
+    else {
+      $del->condition('control_field', $record['field_name']);
+    }
+
+    $del->execute();
+  }
+}

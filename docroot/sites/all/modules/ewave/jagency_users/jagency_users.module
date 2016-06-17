@@ -1,0 +1,73 @@
+<?php
+/**
+ * Implement hook_theme() 
+ */
+function jagency_users_theme($existing, $type, $theme, $path) {
+  $theme_path = drupal_get_path('theme', 'jagency');
+  return array(
+    'jagency_authors_top' => array(
+      'variables' => array(),
+      'path' => $theme_path . '/templates/block',
+      'template' => 'jagency_authors_top'
+    ),
+    'jagency_authors_user' => array(
+      'variables' => array('firstname' => NULL, 'bio' => NULL, 'image' => NULL, 'link' => NULL),
+      'path' => $theme_path . '/templates/custom',
+      'template' => 'jagency_author_user'
+    ),
+  );
+}
+
+/**
+ * Implement hook_block_info()
+ *
+ * Generate HTML for the user_role_summary block
+ * @returns block HTML
+ */
+function jagency_users_block_info() {
+  $blocks = array();
+  $blocks['jagency_authors_top_block'] = array(
+    'info' => t('Authors Top')
+  );
+  return $blocks;
+}
+
+/**
+ * Implement hook_block_view()
+ *
+ * Generate HTML for the user_role_summary block
+ * @param op the operation from the URL
+ * @param delta offset
+ * @returns block HTML
+ */
+function jagency_users_block_view($delta = 0) {
+  $block = array();
+  switch ($delta){
+    case 'jagency_authors_top_block':
+      $args = array();
+      $args['author'] = views_embed_view('authors_view', 'authors_all');
+      $args['author_list'] = views_embed_view('authors_view', 'first_author');
+      $block['subject'] = '';
+      $block['content'] = theme("jagency_authors_top", $args);
+      break;
+  }
+  return $block;
+}
+
+function jagency_authors_custom_user_block($uid) {
+  $user_fields = user_load($uid);
+  if (isset($user_fields->uid) && $user_fields->uid != 0) {
+    $firstname = field_view_field('user', $user_fields, 'field_profile_name', array('label' => 'hidden'));
+    $blog = field_view_field('user', $user_fields, 'field_blog', array('label' => 'hidden', 'type' => 'entityreference_entity_id'));
+    $bio = field_view_field('user', $user_fields, 'field_profile_bio', array('label' => 'hidden'));
+    $image = field_view_field('user', $user_fields, 'field_profile_image', array('label' => 'hidden', 'type' => 'plaintext'));
+    $image[0]['#image_style'] = 'authors_51x51';
+    if (isset($blog[0]['#markup'])) {
+      $link = 'blog/' . $blog[0]['#markup'] .'/user/' . $user_fields->uid;
+    } else {
+      $link = 'blog/user/' . $user_fields->uid;
+    }
+    return theme('jagency_authors_user', array('firstname' => $firstname, 'bio' => $bio, 'image' => $image, 'link' => $link));
+  }
+  return;
+}

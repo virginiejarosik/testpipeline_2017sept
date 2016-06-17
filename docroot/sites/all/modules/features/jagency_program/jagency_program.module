@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the jagency_program feature.
+ */
+
+include_once 'jagency_program.features.inc';

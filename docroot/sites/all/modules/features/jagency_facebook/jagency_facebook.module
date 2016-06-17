@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the jagency_facebook feature.
+ */
+
+include_once 'jagency_facebook.features.inc';

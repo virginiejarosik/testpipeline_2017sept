@@ -1,0 +1,708 @@
+.wrapper, .breadCrumbs { direction: rtl; }
+
+.fLeft { float: right; }
+
+.fRight { float: left; }
+
+.tLeft { text-align: right; }
+
+.tRight { text-align: left; }
+
+.clearOpposite { clear: left; }
+
+.clearCurrent { clear: right; }
+
+header .wrapper { padding-left: 0; padding-right: 21px; }
+header .search { float: left; margin-left: 0; margin-right: 10px; }
+header .search input[type="text"] { padding-left: 30px; padding-right: 8px; }
+header .search button { right: 134px; }
+header .headNav li { float: right; }
+header .user, header .languages { float: left; margin-left: 0; margin-right: 1px; }
+header .user button, header .languages button { padding-left: 24px; padding-right: 8px; }
+header .user button:after, header .languages button:after { margin-left: 0; margin-right: 9px; }
+header .user ul li img, header .languages ul li img { margin-left: 8px; margin-right: 0; }
+.wrapper .fRight .search button { background: url(../images/mag.png) center center no-repeat; position: absolute; left: 22px; right: auto; top: 0; border: 0; width: 40px; height: 41px; margin-right: -40px; }
+
+menu { direction: rtl; }
+menu .logo { float: right; }
+menu ul { float: right; }
+menu ul li { float: right; border-left: none; border-right: 1px solid #dddddd; }
+menu ul li > a:after { left: 20px; right: auto; }
+menu .drop { left: 0; right: auto; }
+menu .drop dl { float: right; margin-left: 15px; margin-right: 0; border-left: 1px solid #eaeaea; border-right: none; }
+menu .drop figure { float: right; margin-left: 20px; margin-right: 0; }
+
+footer { direction: rtl; }
+footer .top ul { float: right; }
+footer .top ul li { float: right; margin-left: 22px; margin-right: 0; }
+footer .top p { float: left; }
+footer .top .linkBorder { margin-left: 0; margin-right: 8px; }
+footer .nav dl { float: right; margin-left: 0; margin-right: 20px; }
+footer .nav dl:first-child { margin-right: 0; }
+
+.hpSocial li { float: right; margin-left: 0; margin-right: 20px; }
+.hpSocial li:first-child { margin-right: 0; }
+.hpSocial li p img { float: right; margin-left: 15px; margin-right: 0; }
+
+aside { float: left; }
+
+.jaEvent .introGrey { text-align: right; }
+.opportunity h4 { padding-left: 0; padding-right: 20px; }
+.opportunity dl { padding-left: 10px; padding-right: 20px; }
+
+.picList dd img, .picList dd .eventDate { float: right; margin-left: 11px; margin-right: 0; }
+
+.moreabout_with_stories .picList230 { margin-right: 20px !important; clear: none !important; }
+
+.picList230 { margin-right: -10px; clear: both; }
+.picList230 li { float: right; width: 230px; margin-left: 5px; height: 201px; margin-bottom: 15px; overflow: hidden; }
+.picList230 li a { font: 18px/1.3 "AvenirNextLTW01-Regular", Arial, Helvetica, sans-serif; }
+.picList230 li h5 { min-height: 39px; margin: 0; color: #666666; font: normal 22px/1 "Baskerville W01 Regular 927184", Times New Roman, Serif; }
+.picList230 li h5 a { color: #666666; font: normal 22px/1 "Baskerville W01 Regular 927184", Times New Roman, Serif; }
+.picList230 li .pic { width: 230px; height: 138px; display: block; margin-bottom: 10px; }
+.picList230 li .fb-comments-count { padding-top: 10px; }
+.picList230.single li { height: auto; margin-bottom: 0; }
+.picList230.leadership li { height: auto; }
+.picList230.leadership li h5 { font-size: 17px; margin: 19px 0 8px; min-height: auto; }
+.picList230.leadership li h5 a { font-size: 17px; }
+.picList230.leadership li h6 { font: 14px/1.2 "AvenirNextLTW01-Regular", Arial, Helvetica, sans-serif; }
+.picList230.leadership li h6 a { font-size: 14px; }
+.picList230 .slogan { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; background: #26323f; color: white; width: 230px; height: 138px; display: table-cell; vertical-align: middle; clear: both; margin-bottom: 10px; text-align: center; font: 30px/1.3 "AvenirNextLTW01-Regular", Arial, Helvetica, sans-serif; }
+.picList230 .slogan + a { display: block; margin-top: 10px; }
+
+.col730 .picList230.single { border-bottom: 1px solid gainsboro; min-height: 419px; }
+
+/***********picList480*************/
+.picList480 { margin-left: -20px; margin-right: -10px; clear: both; }
+.picList480 li { float: right; width: 480px; margin-left: 12px; margin-right: 12px; margin-bottom: 15px; overflow: hidden; }
+.picList480 li a { font: 18px/1.3 "AvenirNextLTW01-Regular", Arial, Helvetica, sans-serif; }
+.picList480 li h5 { min-height: 39px; margin: 0; color: #666666; font: normal 22px/1 "Baskerville W01 Regular 927184", Times New Roman, Serif; }
+.picList480 li h5 a { color: #666666; font: normal 22px/1 "Baskerville W01 Regular 927184", Times New Roman, Serif; }
+.picList480 li .pic { width: 480px; height: 280px; display: block; margin-bottom: 10px; }
+.picList480 li p { font-size: 14px; margin: 10px 0; }
+
+/********Facebook Album*************/
+ul.Facebook_album li { text-align: center; float: right; margin-right: 13px; height: 97px; width: 140px; list-style-type: none; overflow: hidden; border: 1px solid silver; }
+
+/**********map**************/
+#map730 { height: 379px; }
+#map480 { height: 630px; }
+.map {direction: rtl; border-top: 1px solid #a0afbb; min-height: 546px; position: relative; }
+.map .wrapper { position: relative; }
+.map .mapGI { background: url(../images/mapGI.png); padding-left: 30px; background-position: right top; background-repeat: no-repeat; background-color: #82929f; display: block; top: -29px; left: 41%; position: absolute; z-index: 99999; height: 58px; width: 242px; color: white; text-indent: 23px; font: normal 23px/2.7 "Baskerville W01 Regular 927184", Times New Roman, Serif; }
+.map .cards { position: absolute; right: 200px; top: 70px; width: 230px; }
+.map .card { direction: rtl; background: white; display: none; width: 230px; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; text-align: center; padding-bottom: 10px; box-shadow: 0px 3px 8px -3px rgba(0, 0, 0, 0.2); }
+.map .card .top { height: 61px; margin-bottom: 10px; }
+.map .card .top .prev, .map .card .top .next { background: url(../images/cardBrowse.png) 0 0 no-repeat; height: 16px; width: 11px; padding: 0; border: 0; margin: 21px 0 0; }
+.map .card .top .prev { float: left; margin-left: 19px; text-indent: -9000px;}
+.map .card .top .next { background-position: -18px 0; float: right; margin-right: 19px; text-indent: -9000px;}
+.map .card .top .year_container { left: 51.5px; position: absolute; top: 18px; width: 130px;}
+.map .card .top .year { color: white; font: normal 24px/1 "AvenirNextLTW01-Regular", Arial, Helvetica, sans-serif; margin: 0 auto; }
+.map .card figure { display: table-cell; margin: 5px 0; text-align: center; vertical-align: middle; width: 230px; }
+.map .card strong { font-size: 30px; line-height: 1; display: block; }
+.map .card p { color: #737a7f; height: 92px; line-height: 1.3; margin: 5px 15px 0; padding-bottom: 2px; overflow: hidden; }
+
+
+.impactBar .flagsCount { float: right; }
+.impactBar .impactBarBrowse, .impactBar .byTopics, .impactBar .byYear, .impactBar .byKeywords { float: left; }
+.impactBar .topicsWrapper, .impactBar .rangeWrapper, .impactBar .keywordsWrapper { float: left; border-left: none; border-right: 1px solid #e4e4e4; }
+.impactBar .byTopics .topicsWrapper ul { padding-left: 0; padding-right: 6px; }
+.impactBar .byTopics .topicsWrapper ul li { float: right; margin-left: 6px; margin-right: 0; }
+.impactBar .byTopics .topicsWrapper ul li a:after { left: 10px; right: auto; }
+.impactBar .byYear .impactBarBrowse { border-left: 1px solid #586676; border-right: none; }
+.impactBar .byYear .rangeWrapper { padding-left: 75px; padding-right: 20px; }
+.impactBar .byYear .rangeWrapper .yearTo { float: left; }
+.impactBar .byYear .rangeWrapper .reset { float: left; margin-left: -103px; margin-right: 0; }
+.impactBar .byYear .rangeWrapper #year-range #sliderLabel0.handleYear { text-align: left; left: auto; right: 0; }
+.impactBar .byYear .rangeWrapper #year-range #sliderLabel1.handleYear { left: 0; right: auto; }
+.impactBar .byKeywords .keywordsWrapper { padding-left: 0; padding-right: 20px; }
+.impactBar .byKeywords .keywordsWrapper input[type="text"] { float: right; margin-left: 20px; margin-right: 0; padding-left: 55px; padding-right: 10px; }
+.impactBar .byKeywords .keywordsWrapper input[type="button"] { left: auto; right: 441px; }
+
+.p2gBannerIntro img { float: right; }
+
+.aliyahServices table th { text-align: right; }
+
+aside .nav li a { padding-left: 24px; padding-right: 16px; }
+aside .nav li.active a { padding-left: 24px; padding-right: 12px; border-left: none; border-right: 4px solid #0054a6; }
+aside .nav li a.sub { background-position: 20px center; }
+aside .nav.cs1 li.active a { border-right-color: #624A7E; color: #624A7E; }
+aside .nav.cs2 li.active a { border-right-color: #A3CC67; color: #A3CC67; }
+aside .nav.cs3 li.active a { border-right-color: #E9BA52; color: #E9BA52; }
+aside .nav.cs4 li.active a { border-right-color: #F26C4F; color: #F26C4F; }
+aside .nav li.active a.sub { background-position: 20px center; }
+aside .nav li ul { padding-left: 0; padding-right: 20px; }
+
+.tblColors td { border-left: none; border-right: 6px solid white; }
+
+.videoDiv .playBig { left: auto; right: 307px; }
+.videoDiv .play { left: auto; right: 339px; }
+
+.col480 .videoDiv .play { left: auto; right: 214px; }
+
+.subscribe { float: left; text-align: left; }
+.subscribe .rss, .subscribe .viaEmail { margin-left: 0; margin-right: 12px; }
+
+.sponsorshipsItems .arrow { left: auto; right: 106px; }
+.sponsorshipsItems input[type="text"] { left: auto; right: 20px; }
+.sponsorshipsItems li { float: right; margin-left: 0; margin-right: 20px; }
+.sponsorshipsItems li.active:after { left: auto; right: 112px; }
+.sponsorshipsItems li:first-child { margin-right: 0; }
+
+.sponsor label { margin-left: 20px; margin-right: 0; }
+.sponsor label .q { margin-left: 0; margin-right: 10px; }
+
+article .logo, article .articlePic { float: right; margin-left: 25px; margin-right: 0; }
+article ul { list-style-type: circle; }
+article ul li { margin-right: 17px; }
+
+.resources { direction: rtl; float: right; margin-left: 25px; margin-right: 0; }
+
+.groupStip .join { float: right; margin-left: 20px; margin-right: 0; }
+
+.qaList dt { padding-left: 120px; padding-right: 22px; }
+.qaList dt .fRight { margin-left: -102px; margin-right: 0; }
+.qaList dt figure { margin-left: 0; margin-right: 14px; }
+.qaList ul .pic { float: right; margin-left: 0; margin-right: -62px; }
+.qaList ul .but { margin-left: 20px; margin-right: 0; }
+
+.newsList figure { float: right; margin-left: 20px; margin-right: 0; }
+
+.picIntro figure .cr { left: 17px; right: auto; }
+
+.sidePics img { float: right; }
+
+#ui-datepicker-div { direction: rtl; }
+/***********opportunityConfigWrapper*************/
+.opportunityConfigWrapper { background: white; margin-top: -1px; }
+.opportunityConfigWrapper .item-list a, .view-inside-the-jewish-agency .item-list a { display: block; background: #f0f0ef; border: 1px solid #e3e1e1; clear: both; color: #8e8e8e; cursor: pointer; font: bold 14px/3 Arial, Helvetica, sans-serif; text-align: center; text-transform: uppercase; }
+.view-inside-the-jewish-agency .views-exposed-widget { padding: 0 !important; }
+
+
+/**********lpGallery**************/
+.lpGallery { margin: 0 -1px; position: relative; }
+.lpGallery img { width: 230px; height: 138px; display: inline-block; margin: 0 1px 5px;}
+
+/**********lpGallery**************/
+.lpVideoGallery { margin: 0 -1px; position: relative; }
+.lpVideoGallery img { display: inline-block; margin: 0 1px 5px;}
+
+
+  /************opportunityConfig************/
+  .opportunityConfig dt {
+    background: #34404f;
+    color: white;
+    font-size: 13px;
+    padding: 19px 20px 21px;
+    margin-bottom: 2px;
+  }
+  .opportunityConfig dt h4 {
+    color: white;
+    margin: 0 0 10px;
+  }
+  .opportunityConfig dd {
+    background: #34404f;
+    margin-bottom: 2px;
+  }
+  .opportunityConfig dd h5 {
+    cursor: pointer;
+    background: url(../images/menuArrowSide.gif) 18px center no-repeat #26323f;
+    border-bottom: 1px solid #1d2630;
+    color: #b1bbc5 !important;;
+    margin: 0 !important;;
+    font: normal 14px/1.3 "AvenirNextLTW01-Regular", Arial, Helvetica, sans-serif !important;
+    padding: 12px 10px 8px 35px !important;
+    display: block !important;
+    min-height: initial !important;
+  }
+  .opportunityConfig dd h5.active {
+    background-image: url(../images/menuArrowOn2.gif);
+    color: white;
+  }
+  .opportunityConfig dd .drop {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    display: none;
+  }
+  .opportunityConfig .ui-selectmenu-button .ui-icon {
+    background-color: #5f7183;
+    height: 35px;
+    width: 35px;
+  }
+  .opportunityConfig .ui-selectmenu-button .ui-selectmenu-text {
+    background-color: #3f4e5e;
+    border: 0;
+    color: #fff;
+    font: 12px/3 Arial, Helvetica, sans-serif;
+    height: 35px;
+    padding: 0 40px 0 13px;
+  }
+  .opportunityConfig .form-item-field-what-do-you-want-to-do-target-id.form-item, .opportunityConfig .form-item-field-language-target-id.form-item, .opportunityConfig .form-item-field-time-of-year-value.form-item, .opportunityConfig .form-item-field-program-icons-value.form-item, .opportunityConfig .form-item-field-where-do-you-want-togo-target-id.form-item, .opportunityConfig .form-item-field-age-group-target-id.form-item {
+    margin-top: 0 !important;
+    margin-bottom: 0px !important;
+  }
+  .opportunityConfig .edit-field-age-group-target-id ul, .opportunityConfig .edit-field-age-group-target-id .bef-select-as-radios, .opportunityConfig .edit-field-language-target-id .bef-select-as-radios {
+    margin: 0 6px;
+    padding: 8px 0;
+  }
+  .opportunityConfig .edit-field-age-group-target-id ul li a, .opportunityConfig .edit-field-language-target-id .bef-select-as-radios label, .opportunityConfig .edit-field-what-do-you-want-to-do-target-id .bef-checkboxes label, .opportunityConfig .edit-field-age-group-target-id .bef-select-as-radios label {
+    cursor: pointer;
+    display: block;
+    color: white;
+    font-size: 13px;
+    margin-top: 1px;
+    padding: 6px 5px 6px 15px;
+  }
+  .opportunityConfig .edit-field-age-group-target-id ul .form-type-bef-link.active, .opportunityConfig .form-item-field-what-do-you-want-to-do-target-id .bef-checkboxes label.active, .opportunityConfig .edit-field-age-group-target-id .bef-select-as-radios label.active, .opportunityConfig .edit-field-language-target-id .bef-select-as-radios label.active {
+    background: #68737f;
+  }
+  .opportunityConfig .edit-field-start-date-value {
+    color: white;
+    padding: 22px 20px;
+  }
+  .opportunityConfig .edit-field-start-date-value input[type=text] {
+    background: #707f8f;
+    color: white;
+    border: 0;
+    padding: 7px 10px;
+    width: 124px;
+    margin-left: 13px;
+    font: 14px/1.3 "AvenirNextLTW01-Regular", Arial, Helvetica, sans-serif;
+  }
+  .opportunityConfig .edit-field-start-date-value .ui-datepicker-trigger {
+    margin: 6px 0 0 -29px;
+    position: absolute;
+  }
+  .opportunityConfig .edit-field-how-long-value, .opportunityConfig .edit-field-total-cost-value {
+    padding: 29px 16px 0;
+    color: white;
+  }
+  .opportunityConfig .edit-field-how-long-value #HowLong, .opportunityConfig .edit-field-total-cost-value #totalCost {
+    background: #707f8f;
+    height: 6px;
+  }
+  .opportunityConfig .ui-slider-range {
+    background: #cbd0d6;
+  }
+  .opportunityConfig .ui-slider-handle.firstHandle, .opportunityConfig .ui-slider-handle.secondHandle {
+    background: url(../images/handleTimeSpan.png) 0 0 no-repeat;
+    width: 22px !important;
+    height: 15px !important;
+  }
+  .opportunityConfig .ui-slider-handle.secondHandle {
+    background-position: -22px 0;
+  }
+  .opportunityConfig .timeSpanText {
+    padding: 10px 0 2px;
+  }
+  .opportunityConfig .form-item-field-where-do-you-want-togo-target-id .ui-selectmenu-dropdown, #edit-field-where-do-you-want-togo-target-id-menu {
+    width: 190px !important;
+  }
+  .ui-selectmenu-menu ul {
+    width: 190px;
+  }
+  .opportunityConfig .edit-field-program-icons-value, .opportunityConfig .edit-field-time-of-year-value {
+    color: white;
+    padding: 22px 20px 0;
+  }
+  .opportunityConfig .edit-field-where-do-you-want-togo-target-id {
+    color: white;
+    padding: 22px 20px;
+  }
+  .opportunityConfig .form-item-field-time-of-year-value .bef-checkboxes, .opportunityConfig .form-item-field-program-icons-value .bef-checkboxes {
+    border-bottom: 1px solid #465261;
+  }
+  .opportunityConfig .form-item-field-time-of-year-value .bef-checkboxes label, .opportunityConfig .form-item-field-program-icons-value .bef-checkboxes label {
+    cursor: pointer;
+    background: url(../images/chkBox.png) no-repeat right top;
+    margin-bottom: 7px;
+    padding: 1px 25px 1px 0;
+  }
+  .opportunityConfig .form-item-field-time-of-year-value .bef-checkboxes label.active, .opportunityConfig .form-item-field-program-icons-value .bef-checkboxes label.active {
+    background-position: 100% -50px;
+  }
+  .opportunityConfig .form-item-field-program-icons-value .form-item {
+    margin-top: 0 !important;
+    margin-bottom: 7px !important;
+    padding: 1px 0 1px 0px;
+  }
+  .opportunityConfig .form-item-field-time-of-year-value input[type=checkbox], .opportunityConfig .form-item-field-program-icons-value input[type=checkbox], .opportunityConfig .form-item-field-what-do-you-want-to-do-target-id input[type=checkbox], .opportunityConfig .edit-field-age-group-target-id input[type=radio], .opportunityConfig .edit-field-language-target-id input[type=radio] {
+    display: none;
+  }
+
+  .opportunityConfig .edit-term-node-tid-depth {
+    color: white;
+    padding: 16px 13px 25px;
+  }
+  .opportunityConfig .edit-term-node-tid-depth input[type=text] {
+    background: #707f8f;
+    color: white;
+    border: 0;
+    padding: 9px 10px;
+    font-size: 14px;
+    width: 184px;
+    margin-bottom: 12px;
+  }
+  .opportunityConfig .edit-term-node-tid-depth .keywords {
+    margin-top: 12px;
+  }
+  .opportunityConfig .edit-term-node-tid-depth .keywords li {
+    background: #586472;
+    border-radius: 5px;
+    display: inline-block;
+    white-space: nowrap;
+    margin-right: 7px;
+    margin-bottom: 7px;
+  }
+  .opportunityConfig .edit-term-node-tid-depth .keywords li a {
+    color: white;
+    text-transform: uppercase;
+    line-height: 2;
+    padding: 0 10px;
+  }
+  .opportunityConfig .edit-term-node-tid-depth .keywords li button {
+    background: url(../images/xW.gif) center center no-repeat;
+    border: 0;
+    border-left: 1px solid #26323f;
+    height: 25px;
+    width: 25px;
+    vertical-align: middle;
+  }
+  .opportunityConfig .clear {
+    border-top: 1px solid #465261;
+    text-align: left;
+    margin: 0 auto;
+    padding: 10px;
+    width: 80%;
+  }
+  .opportunityConfig .clear button, .opportunityConfig .clear a {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: #b2b2b2;
+    font-size: 11px;
+    padding: 0;
+  }
+  .stickyWrapper {
+    position: relative;
+  }
+  .toTop {
+    background: #f0f0ef;
+    position: absolute;
+    width: 228px;
+    border: 1px solid #e3e1e1;
+    color: #8e8e8e;
+    cursor: pointer;
+    font: bold 14px/3 Arial, Helvetica, sans-serif;
+    text-align: center;
+    text-transform: uppercase;
+    clear: both;
+    text-align: center;
+  }
+  .opportunityConfig .toTop a {
+    color: #8e8e8e;
+    text-transform: uppercase;
+  }
+  .opportunityConfig .toTop a:before {
+    background: url(../images/toTop.png);
+    width: 7px;
+    height: 9px;
+    display: inline-block;
+    vertical-align: middle;
+    content: "";
+    margin: 0 5px;
+  }
+
+/*************doWhen-datepicker***********/
+.doWhen-datepicker.ui-datepicker { background: #f3f3f3; border: 1px solid #dbdbdb; border-top: 0; padding: 0; }
+.doWhen-datepicker.ui-datepicker .ui-datepicker-header { background: #707f8f; color: white; padding: 5px 0; font: normal 14px/1.3 "AvenirNextLTW01-Regular", Arial, Helvetica, sans-serif; margin: 0 -1px; }
+.doWhen-datepicker.ui-datepicker .ui-datepicker-header .ui-datepicker-prev { background: url(../images/arrowL.gif) center center no-repeat; left: 11px; top: 6px; cursor: pointer; }
+.doWhen-datepicker.ui-datepicker .ui-datepicker-header .ui-datepicker-next { background: url(../images/arrowR.gif) center center no-repeat; right: 11px; top: 6px; cursor: pointer; }
+.doWhen-datepicker.ui-datepicker table { width: 188px; margin: 0 auto 0.5em; }
+.doWhen-datepicker.ui-datepicker table th { color: #959595; border: 6px solid #f3f3f3; height: 20px; padding: 3px 0; }
+.doWhen-datepicker.ui-datepicker table td { background-color: white; color: #acacac; font-size: 11px; font-weight: bold; text-align: center; border: 6px solid #f3f3f3; height: 20px; width: 20px; padding: 0; }
+.doWhen-datepicker.ui-datepicker table td.ui-datepicker-other-month { background: none; }
+.doWhen-datepicker.ui-datepicker table td a { color: #acacac; padding: 0; text-align: center; }
+.doWhen-datepicker.ui-datepicker table td.ui-datepicker-today { background: #707f8f; }
+.doWhen-datepicker.ui-datepicker table td.ui-datepicker-today a { color: white; }
+.doWhen-datepicker.ui-datepicker table td.ui-datepicker-current-day { background: #26323f; }
+.doWhen-datepicker.ui-datepicker table td.ui-datepicker-current-day a { color: white; }
+
+/**********filter**************/
+.filter { min-height: 23px; background: #f9f9f8; border-bottom: 1px solid #e4e4e4; border-top: 1px solid #e4e4e4; padding: 20px 10px 20px 17px; font: 18px/1.3 "AvenirNextLTW01-Regular", Arial, Helvetica, sans-serif; margin-bottom: 20px; }
+.filter .fRight { margin-top: -10px; }
+.filter .ui-selectmenu-button { vertical-align: middle; }
+.filter .ui-selectmenu-button + .search { margin-left: 20px; }
+.filter #edit-field-roles-target-id { width: 280px; }
+
+.fixedWrapper { direction: rtl; }
+
+.storyHead .action { float: left; }
+.storyHead .action a { margin-left: 0; margin-right: 5px; }
+
+.storyIntro figure .cr, .fsPicWrapper .cr { left: 17px; right: auto; }
+
+.shareStory .text { float: left; margin-left: 90px; margin-right: 0; }
+
+.bwGallery .tTip .text { padding-left: 15px; padding-right: 20px; }
+.bwGallery .tTip .text a { float: left; }
+.bwGallery .pic-1 { left: auto; right: 0; }
+.bwGallery .pic-1 .tTip { left: auto; right: 183px; }
+.bwGallery .pic-1 .tTip:before { left: auto; right: 40px; }
+.bwGallery .pic-2 { left: auto; right: 591px; }
+.bwGallery .pic-2 .tTip { left: auto; right: -14px; }
+.bwGallery .pic-2 .tTip:before { left: auto; right: 40px; }
+.bwGallery .pic-3 { left: auto; right: 0; }
+.bwGallery .pic-3 .tTip { left: auto; right: 183px; }
+.bwGallery .pic-3 .tTip:before { left: auto; right: -3px; border-width: 17px 0 17px 17px; border-color: transparent; border-left-color: #fff; }
+.bwGallery .pic-4 { left: auto; right: 197px; }
+.bwGallery .pic-4 .tTip { left: auto; right: 380px; }
+.bwGallery .pic-4 .tTip:before { left: auto; right: -3px; border-width: 17px 0 17px 17px; border-color: transparent; border-left-color: #fff; }
+.bwGallery .pic-5 { left: auto; right: 591px; }
+.bwGallery .pic-5 .tTip { left: auto; right: -14px; }
+.bwGallery .pic-5 .tTip:before { left: auto; right: 40px; }
+.bwGallery .pic-6 { left: auto; right: 0; }
+.bwGallery .pic-6 .tTip { left: auto; right: 183px; }
+.bwGallery .pic-6 .tTip:before { left: auto; right: -3px; border-width: 17px 0 17px 17px; border-color: transparent; border-left-color: #fff; }
+.bwGallery .pic-7 { left: auto; right: 591px; }
+.bwGallery .pic-7 .tTip { left: auto; right: -14px; }
+.bwGallery .pic-7 .tTip:before { left: auto; right: 40px; }
+.bwGallery .pic-8 { left: auto; right: 788px; }
+.bwGallery .pic-8 .tTip { left: auto; right: -211px; }
+.bwGallery .pic-8 .tTip:before { left: 40px; right: auto; }
+
+.eventsList dd { padding-left: 0; padding-right: 57px; }
+.eventsList dd .eventDate { float: right; margin-left: 0; margin-right: -57px; }
+
+.memberResources table th { text-align: right; }
+
+.membersList figure { float: right; margin-left: 20px; margin-right: 0; }
+.membersList p { margin-left: 40px; margin-right: 0; }
+.membersList .toggleText { padding-left: 17px; padding-right: 0; }
+
+.bio .col480 figure .cr { left: 17px; right: auto; }
+.bio .col480 blockquote { float: right; margin-left: 20px; margin-right: 0; }
+
+.greyListBox ul.bookList li { padding-left: 0; padding-right: 92px; }
+.greyListBox ul.bookList img { float: right; margin-left: 0; margin-right: -92px; }
+
+.tweets li { padding-left: 0; padding-right: 65px; }
+.tweets li img { float: right; margin-left: 0; margin-right: -65px; }
+
+.jaArticle { float: left; margin-left: 0px; margin-right: 0; }
+
+.shareArticle .meta { margin-left: 20px; margin-right: 0; }
+
+.contactBox h6 span { float: left; }
+
+.internationalOffices th { text-align: right; }
+.internationalOffices td { padding-left: 20px; padding-right: 0; }
+
+.newsletters .subscriptions { padding-left: 0; padding-right: 30px; }
+.newsletters .subscriptions label input[type="checkbox"] { float: right; margin-left: 0; margin-right: -20px; }
+.newsletters .information { padding-left: 0; padding-right: 30px; }
+.newsletters .information label { margin-left: 20px; margin-right: 0; }
+.newsletters .information label span { float: left; }
+
+.p2gBannerIntro { direction: rtl; }
+
+.ui-helper-zfix { left: auto; right: 0; }
+
+.ui-icon { text-decoration: none; }
+
+.ui-widget-overlay, .ui-resizable-n, .ui-resizable-s { left: auto; right: 0; }
+
+.ui-resizable-e { left: -5px; right: auto; }
+
+.ui-resizable-w { left: auto; right: -5px; }
+
+.ui-resizable-se { left: 1px; right: auto; }
+
+.ui-resizable-sw, .ui-resizable-nw { left: auto; right: -5px; }
+
+.ui-resizable-ne { left: -5px; right: auto; }
+
+.ui-accordion .ui-accordion-icons { padding-left: 0; padding-right: 2.2em; }
+.ui-accordion .ui-accordion-icons .ui-accordion-icons { padding-left: 0; padding-right: 2.2em; }
+.ui-accordion .ui-accordion-header .ui-accordion-header-icon { left: auto; right: 0; }
+
+.ui-autocomplete { left: auto; right: 0; }
+
+.ui-button-text-icon-primary .ui-button-text, .ui-button-text-icons .ui-button-text { padding-left: 1em; padding-right: 2.1em; }
+
+.ui-button-text-icon-secondary .ui-button-text, .ui-button-text-icons .ui-button-text { padding-left: 2.1em; padding-right: 1em; }
+
+.ui-button-icon-only .ui-icon { left: auto; right: 50%; margin-left: 0; margin-right: -8px; }
+
+.ui-button-text-icon-primary .ui-button-icon-primary, .ui-button-text-icons .ui-button-icon-primary, .ui-button-icons-only .ui-button-icon-primary { left: auto; right: 0; }
+
+.ui-button-text-icon-secondary .ui-button-icon-secondary, .ui-button-text-icons .ui-button-icon-secondary, .ui-button-icons-only .ui-button-icon-secondary { left: 0; right: auto; }
+
+.ui-buttonset { margin-left: 7px; margin-right: 0; }
+
+.ui-datepicker .ui-datepicker-prev { right: 2px; }
+.ui-datepicker .ui-datepicker-next { left: 2px; right: auto; }
+.ui-datepicker .ui-datepicker-prev-hover { left: auto; right: 1px; }
+.ui-datepicker .ui-datepicker-next-hover { left: 1px; right: auto; }
+.ui-datepicker .ui-datepicker-prev span, .ui-datepicker .ui-datepicker-next span { left: auto; right: 50%; margin-left: 0; margin-right: -8px; }
+.ui-datepicker td span, .ui-datepicker td a { text-align: left; }
+.ui-datepicker .ui-datepicker-buttonpane button { float: left; }
+.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current { float: right; }
+
+.ui-datepicker-multi .ui-datepicker-group { float: right; }
+.ui-datepicker-multi .ui-datepicker-buttonpane { clear: right; }
+
+.ui-dialog { left: auto; right: 0; }
+.ui-dialog .ui-dialog-title { float: right; }
+.ui-dialog .ui-dialog-titlebar-close { left: 0; right: auto; }
+.ui-dialog .ui-dialog-buttonpane { text-align: right; padding-left: 1em; padding-right: 0; }
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset { float: left; }
+.ui-dialog .ui-resizable-se { left: -5px; right: auto; }
+
+.ui-menu-icons .ui-menu-item a { padding-left: 0; padding-right: 2em; }
+
+.ui-menu .ui-icon { left: auto; right: 0; }
+.ui-menu .ui-menu-icon { float: left; }
+
+.ui-progressbar, .ui-slider { text-align: right; }
+
+.ui-slider-horizontal .ui-slider-range-min { left: auto; right: 0; }
+.ui-slider-horizontal .ui-slider-range-max { left: 0; right: auto; }
+
+.ui-slider-vertical .ui-slider-handle, .ui-slider-vertical .ui-slider-range { left: auto; right: 0; }
+
+.ui-spinner-input { margin-left: 22px; margin-right: 0; }
+
+.ui-spinner-button { left: 0; right: auto; }
+
+.ui-spinner .ui-icon { left: auto; right: 0; }
+
+.ui-tabs .ui-tabs-nav li { float: right; }
+.ui-tabs .ui-tabs-nav li a { float: right; }
+
+.ui-selectmenu-icon { left: 6px; right: auto; }
+
+.ui-selectmenu-menu { direction: rtl; }
+
+.ui-selectmenu-menu li a, .ui-selectmenu-status { padding-left: 2.1em; padding-right: 1em; }
+
+.ui-selectmenu-menu li.ui-selectmenu-hasIcon a, .ui-selectmenu-hasIcon .ui-selectmenu-status { margin-left: 0; margin-right: 5px; padding-left: 0; padding-right: 20px; }
+
+.ui-selectmenu-menu li .ui-icon, .ui-selectmenu-status .ui-icon { left: auto; right: 0; }
+
+.ui-selectmenu-icon { left: 6px; right: auto; }
+
+.ui-selectmenu-menu li.ui-selectmenu-hasIcon a, .ui-selectmenu-hasIcon .ui-selectmenu-status { margin-left: 0; margin-right: 5px; padding-left: 0; padding-right: 20px; }
+
+.ui-selectmenu-menu li .ui-icon, .ui-selectmenu-status .ui-icon { left: auto; right: 0; }
+
+.ui-selectmenu-button span.ui-icon { left: 0; right: auto; }
+.ui-selectmenu-button span.ui-selectmenu-text { text-align: right; padding-left: 2.1em; padding-right: 1em; }
+.ui-selectmenu-button span.ui-icon { left: 1px; right: auto; }
+.ui-selectmenu-button span.ui-selectmenu-text { padding-left: 50px; padding-right: 14px; }
+
+.ui-selectmenu-menu .ui-menu .ui-menu-item a { padding-left: 0; padding-right: 14px; }
+
+.opportunityFilter .ui-selectmenu-button .ui-selectmenu-text { padding-left: 40px; padding-right: 13px; }
+
+.anythingSlider .panel { direction: rtl; }
+
+.gallery980 .photoCR { left: 17px; right: auto; }
+.gallery980 .picText.right { left: 70px; right: auto; }
+/*.gallery980 .picText.left { left: auto; right: 70px; }*/
+.gallery980 .button { margin-left: 20px; margin-right: 0; }
+.gallery980 .emergency figure { left: auto; right: 70px; }
+.gallery980 .emergency figure .play { /* left: auto; right: 177px;*/ }
+.gallery980 .emergency .text { left: 60px !important; right: auto !important; }
+
+/**********************************/
+/*h1, h2, h3, h4, menu .drop dl dt*/
+html * { font-family: Arial, Helvetica, sans-serif !important; }
+
+/***********locations*************/
+.locations li {
+  border-bottom: 1px solid #dadada;
+  padding: 14px 44px 0 0;
+  margin-right: 10px; 
+}
+.locations li .num {
+    background: url(../images/marker-cs5-simple.png) center no-repeat;
+    color: white;
+    float: right;
+    font-weight: bold;
+    height: 28px;
+    line-height: 24px;
+    margin: 3px -40px 0 20px;
+    text-align: center;
+    width: 18px; 
+}
+.locations > li > a {
+    font: 18px/1.3 "AvenirNextLTW01-Regular", Arial, Helvetica, sans-serif; 
+}
+.locations li .withoutlink {
+  font: 18px/1.3 "AvenirNextLTW01-Regular", Arial, Helvetica, sans-serif;
+  text-decoration: none;
+  color: #224F7C;
+}
+.paging span.pagingArrowR {
+  display: inline-block;
+  background: url(../images/pagingArrowL.png);
+  height: 16px;
+  margin: 0 20px;
+  width: 11px;
+}
+
+.paging span.pagingArrowL {
+  display: inline-block;
+  background: url(../images/pagingArrowR.png);
+  height: 16px;
+  margin: 0 20px;
+  width: 11px;
+}
+
+
+.bogMemberDesc p {
+    font-size: 11px;
+}
+
+.views-field.views-field-title a {
+    font-weight: bold;
+    color: #8E8888;
+}
+
+header .search button {
+    text-indent: 1000px!important;
+}
+
+
+.node-43586 .panel-col-seventy-five  .fLeft {
+    width: 100%; 
+}
+
+
+.node-43586 .panel-col-seventy-five  ul li {
+    float: left;
+    width: 25%;
+    height: 130px;
+    display: block;
+    position: relative;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.node-43586 .panel-col-seventy-five  ul a {
+    color: #fff;
+    font-size: 15px;
+    padding-top: 32px;
+    text-align: center;
+    background: #0054a6;
+    height: 130px;
+    text-decoration: none!important;
+}
+
+
+.node-43586 .panel-col-seventy-five  ul a:hover {
+    background: #58585A;
+}

@@ -1,0 +1,67 @@
+<?php
+/**
+ * Implements hook_node_udpate().
+ */
+function avcc_node_update($node){
+  //Set Node path
+  $path_node = 'node/' . $node->nid;
+  $path_alias = drupal_lookup_path('alias',$path_node);
+  $path_node = $path_node;
+
+  //Clear Varnish Cache
+  avcc_remove_cache($path_node);
+  if($path_alias){
+    avcc_remove_cache($path_alias);
+  }
+}
+
+/**
+ * Implementation of hook_menu
+ */
+function avcc_menu() {
+  $items = array();
+  $items['admin/config/development/avcc'] = array( 
+    'title' => 'Manually Clear Varnish Cache', 
+    'description' => 'Manually clear varnish cache by submit url',
+    'page callback' => 'drupal_get_form', 
+    'page arguments' => array('avcc_manual_cache_remove'),
+    'access arguments' => array('administer site configuration'), 
+    'type' => MENU_NORMAL_ITEM, 
+  );
+  return $items;
+}
+
+function avcc_manual_cache_remove($form, &$form_state) {
+  $form['avcc_url'] = array( 
+    '#type' => 'textfield', 
+    '#title' => t('Url to purge cache')
+  );
+  return system_settings_form($form);
+}
+
+function avcc_manual_cache_remove_submit($form, &$form_state) {
+  //avcc_remove_cache($form_state['values']['avcc_url']);
+  $ch = curl_init();
+  $url = $form_state['values']['avcc_url'];
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept-Encoding: gzip','X-Acquia-Purge:' . $_SERVER['AH_SITE_NAME']));
+  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PURGE');
+  curl_exec($ch);
+  curl_close($ch);
+  cache_clear_all($url, 'cache_page');
+  drupal_set_message(t('Cache succsessfuly updated!'));
+}
+
+/**
+ * Remove the varnish and drupal page cache for the individual page
+ */
+function avcc_remove_cache($path){
+  $ch = curl_init();
+  $url = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $path;
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept-Encoding: gzip','X-Acquia-Purge:' . $_SERVER['AH_SITE_NAME']));
+  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PURGE');
+  curl_exec($ch);
+  curl_close($ch);
+  cache_clear_all($url, 'cache_page');
+}

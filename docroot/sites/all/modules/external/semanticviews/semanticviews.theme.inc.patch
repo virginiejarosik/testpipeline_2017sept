@@ -1,0 +1,15 @@
+Index: sites/all/modules/external/semanticviews/semanticviews.theme.inc
+===================================================================
+--- sites/all/modules/external/semanticviews/semanticviews.theme.inc	(revision 63210)
++++ sites/all/modules/external/semanticviews/semanticviews.theme.inc	(working copy)
+@@ -28,7 +28,9 @@
+       }
+ 
+       $object->handler = &$view->field[$id];
+-
++      if (!isset($vars['options']['semantic_html'][$id])) {
++        $vars['options']['semantic_html'][$id] = array('element_type' => '', 'class' => '', 'label_element_type' => '', 'label_class' => '');
++      }
+       $semantic_html = $vars['options']['semantic_html'][$id];
+ 
+       // Field content

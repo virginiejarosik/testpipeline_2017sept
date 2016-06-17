@@ -1,0 +1,10 @@
+name = Jewish Agency Import Module
+description = All functional support for pages on Jewish Agency
+package = Jewish Agency
+core = 7.x
+version = "7.x-1.0"
+
+files[] = jagency_pages.install
+files[] = jagency_pages.module
+files[] = jagency_pages.admin.inc
+files[] = jagency_pages.phpquery.inc

@@ -1,0 +1,24 @@
+.loading {
+  background-image: url(images/loading_red.gif);
+  background-position: 15% 30px;
+  background-repeat: no-repeat;
+}
+
+.view-admin-views-node #edit-name option[disabled] {
+    display: none;
+}
+.media-wrapper {
+  width: 90% !important;
+}
+.media-wrapper .media-modal-frame {
+  width: 100% !important;
+}
+.page-node-add .media-wrapper, .page-node-edit .media-wrapper {
+  top: 10% !important;
+  min-height: 428px !important;
+}
+.page-node-edit .media-wrapper .media-modal-frame,
+.page-node-add .media-wrapper .media-modal-frame {
+  min-height: 428px !important;
+}
+

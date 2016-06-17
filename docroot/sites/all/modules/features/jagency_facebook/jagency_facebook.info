@@ -1,0 +1,12 @@
+name = jagency_facebook
+core = 7.x
+package = Jewish Agency
+version = 7.x-1.0
+project = jagency_facebook
+dependencies[] = features
+dependencies[] = text
+features[features_api][] = api:2
+features[field_base][] = field_facebook_page_url
+features[field_instance][] = node-facebook_groups-field_facebook_page_url
+features[node][] = facebook_groups
+mtime = 1409131698

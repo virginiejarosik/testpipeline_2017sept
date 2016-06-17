@@ -1,0 +1,67 @@
+/* CSS file for the four three adaptive layout */
+@import url('../../css/base-grid.css');
+
+.panel-col-twenty-five {
+  width: 25%;
+}
+
+.panel-col-twenty-five-end {
+  width: 25%;
+  float: right;
+}
+
+.panel-col-thirty-three {
+  width: 33%;
+}
+
+.panel-col-fifty {
+  width: 50%;
+}
+
+.panel-col-fifty-middle {
+  width: 50%;
+  float: left;
+}
+
+.panel-col-sixty-six {
+  width: 66%;
+}
+
+.panel-col-seventy-five {
+  width: 75%;
+}
+.panel-col-seventy-five-end {
+  width: 75%;
+  float: right;
+}
+
+.panel-col-seventy-five-start {
+  width: 75%;
+  float: left;
+}
+
+.panel-one-hundred {
+  width: 100%;
+}
+
+/* Margins taken from the Panels module plugins */
+.lastUnit .inside {
+  margin: 0 0 1em .5em;
+}
+.firstUnit .inside {
+  margin: 0 .5em 1em 0;
+}
+.unit .inside {
+  margin: 0 .5em 1em .5em;
+}
+#panel-region-reg_2 h2, #panel-region-reg_8 h2 {
+  height: 117px;
+}
+#panels-ipe-regionid-reg_2 .panels-ipe-placeholder {
+  min-height: 307px;
+}
+
+#panels-ipe-regionid-reg_8 .panels-ipe-placeholder {
+  min-height: 295px;
+}
+

@@ -1,0 +1,163 @@
+From 8b73e808b39d4c33f09e5c2e89909e80c37b4b5c Mon Sep 17 00:00:00 2001
+From: Keigan Ashall <keigan.ashall@gmail.com>
+Date: Mon, 11 Jun 2012 12:49:43 -0400
+Subject: [PATCH] Issue #1627524: Added slider functionality.
+
+---
+ better_exposed_filters.info                    |    7 +++-
+ better_exposed_filters.js                      |   52 ++++++++++++++++++++++++
+ better_exposed_filters_exposed_form_plugin.inc |   38 +++++++++++++++++-
+ 3 files changed, 95 insertions(+), 2 deletions(-)
+
+diff --git a/better_exposed_filters.info b/better_exposed_filters.info
+index f069a8b..f00c088 100644
+--- a/better_exposed_filters.info
++++ b/better_exposed_filters.info
+@@ -4,7 +4,12 @@ description = Allow the use of checkboxes or radio buttons for exposed Views fil
+ core = 7.x
+ package = Views
+ dependencies[] = views
++
++; Files
+ files[] = better_exposed_filters.module
+ files[] = better_exposed_filters.views.inc
+ files[] = better_exposed_filters_exposed_form_plugin.inc
+-files[] = better_exposed_filters.theme
+\ No newline at end of file
++files[] = better_exposed_filters.theme
++
++; JS
++files[] = better_exposed_filters.js
+\ No newline at end of file
+diff --git a/better_exposed_filters.js b/better_exposed_filters.js
+index 87d606e..fc5ea6f 100644
+--- a/better_exposed_filters.js
++++ b/better_exposed_filters.js
+@@ -98,6 +98,58 @@
+     }                   // attach: function() {
+   };                    // Drupal.behaviors.better_exposed_filters = {
+ 
++
++  Drupal.behaviors.better_exposed_filters_slider = {
++    attach: function(context, settings) {
++
++      // Work on each filter.
++      $.each(Drupal.settings.better_exposed_filters.defaults, function(i, sliderDefaults) {
++
++        // Only make one slider per filter.
++        $("#" + sliderDefaults.viewId + " #edit-" + i + "-wrapper").once('slider-filter', function(){
++
++          var min = $("input#edit-" + i + "-min");
++          var max = $("input#edit-" + i + "-max");
++
++          if (!min.length || !max.length) {
++            // No min/max elements on this page
++            return;
++          }
++
++          // Set default values or use those passed into the form
++          var init_min = ('' == min.val()) ? sliderDefaults.min : min.val();
++          var init_max = ('' == max.val()) ? sliderDefaults.max : max.val();
++
++           // Set initial values of the slider 
++          min.val(init_min);
++          max.val(init_max);
++
++          // Insert the slider before the min/max input elements 
++          min.parents('div.views-widget').after(
++            $('<div></div>').slider({
++              range: true,
++              min: sliderDefaults.init_min,     // Adjust slider min and max to the range 
++              max: sliderDefaults.init_max,     // of the exposed filter.
++              values: [init_min, init_max],
++              // Attach slide listeners
++              slide: function(event, ui){
++                // Update the form input elements with the new values when the slider moves
++                min.val(ui.values[0]);
++                max.val(ui.values[1]);
++              },
++              // Attach stop listeners
++              stop: function(event, ui){
++                // http://drupal.org/node/1005884#comment-4870638
++                // $(this).parents('form').submit();
++                $(this).parents('form').find('.ctools-auto-submit-click').click();
++              },
++            })
++          );
++        })
++      });
++    }
++  };
++
+   /*
+    * Helper functions
+    */
+diff --git a/better_exposed_filters_exposed_form_plugin.inc b/better_exposed_filters_exposed_form_plugin.inc
+index a70308b..db4f652 100644
+--- a/better_exposed_filters_exposed_form_plugin.inc
++++ b/better_exposed_filters_exposed_form_plugin.inc
+@@ -231,6 +231,19 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
+       else {
+         // dsm($filter->definition['type']);
+       }
++      
++      // Give the option to add a slider for 'between' types.
++      if ($filter->operator == 'between') {
++        $bef_options[$label]['bef_format'] = array(
++          '#type' => 'select',
++          '#title' => t('Display "@label" exposed filter as', array('@label' => $filter->options['expose']['label'])),
++          '#default_value' => $existing[$label]['bef_format'],
++          '#options' => array(
++            'default' => t('Default double select list'),
++            'bef_slider' => t('jQuery Slider'),
++          ),
++        );
++      }
+ 
+       // Main BEF option: default/checkboxes/hidden/etc.
+       if ($bef_specific) {
+@@ -536,10 +549,10 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
+         $form[$field_id]['#bef_description'] = $options['more_options']['bef_filter_description'];
+       }
+ 
+-
+       if (!isset($options['bef_format'])) {
+         $options['bef_format'] = '';
+       }
++      
+       switch ($options['bef_format']) {
+         case 'bef_datepicker':
+           $show_apply = TRUE;
+@@ -808,6 +821,29 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
+           }
+           break;
+ 
++        case 'bef_slider':
++          $form[$field_id]['#attached']['library'][] = array('system','ui.slider');
++          $data = array(
++            'defaults' => array(
++              $field_id => array(
++                'min' => $form[$field_id]['min']['#default_value'],
++                'max' => $form[$field_id]['max']['#default_value'],
++                'id' => $field_id,
++                'viewId' => $form['#id'],
++              ),
++            ),
++            // 'settings' => $instance['widget']['settings'],
++          );
++
++          $form[$field_id]['#attached']['js'][] = array('data' => array('better_exposed_filters' => $data), 'type' => 'setting');
++          $form[$field_id]['#attached']['js'][] = array(
++            'data' => drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js',
++            'type' => 'file',
++            'scope' => 'footer'
++          );
++
++          break;
++
+         default:
+           // Handle functionality for exposed filters that are not limited to BEF only filters
+           $show_apply = TRUE;
+-- 
+1.7.4.4
+

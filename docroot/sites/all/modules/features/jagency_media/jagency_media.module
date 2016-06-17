@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the jagency_media feature.
+ */
+
+include_once 'jagency_media.features.inc';

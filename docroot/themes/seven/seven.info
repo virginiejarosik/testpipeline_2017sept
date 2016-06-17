@@ -5,6 +5,7 @@ version = VERSION
 core = 7.x
 stylesheets[screen][] = reset.css
 stylesheets[screen][] = style.css
+stylesheets[screen][] = custom.css
 settings[shortcut_module_link] = 1
 regions[content] = Content
 regions[help] = Help
@@ -13,8 +14,8 @@ regions[page_bottom] = Page bottom
 regions[sidebar_first] = First sidebar
 regions_hidden[] = sidebar_first
 
-; Information added by Drupal.org packaging script on 2016-02-24
-version = "7.43"
+; Information added by Drupal.org packaging script on 2014-11-19
+version = "7.34"
 project = "drupal"
-datestamp = "1456343506"
+datestamp = "1416429488"
 

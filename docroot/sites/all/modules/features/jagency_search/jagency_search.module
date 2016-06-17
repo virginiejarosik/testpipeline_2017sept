@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the jagency_search feature.
+ */
+
+include_once 'jagency_search.features.inc';

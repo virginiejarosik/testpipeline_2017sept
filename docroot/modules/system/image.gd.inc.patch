@@ -1,0 +1,13 @@
+Index: modules/system/image.gd.inc
+===================================================================
+--- modules/system/image.gd.inc	(revision 63339)
++++ modules/system/image.gd.inc	(working copy)
+@@ -347,7 +347,7 @@
+ function image_gd_get_info(stdClass $image) {
+   $details = FALSE;
+   $img = drupal_realpath($image->source);
+-  if ($img && filesize($img)) {
++  if (file_exists($img) && filesize($img)) {
+     $data = getimagesize($img);
+   }
+ 

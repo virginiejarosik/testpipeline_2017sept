@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * Implements hook_form_alter().
+ */
+
+
+function slider_item_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'slider_item_node_form') {
+    $form['group_video']['#access'] = 0;
+    $form['field_slider_type']['#access'] = 0;
+    $form['body']['#access'] = 0;   
+
+    $options = $form['field_slider_type']['#options'];
+    print($options);
+  }
+}

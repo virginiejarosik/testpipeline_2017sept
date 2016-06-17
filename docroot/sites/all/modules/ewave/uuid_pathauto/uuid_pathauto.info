@@ -1,0 +1,13 @@
+name = UUID Pathauto Features Integration
+description = Provides features integration for pathauto patterns based on the UUID Features Integration.
+core = 7.x
+dependencies[] = features
+dependencies[] = uuid
+dependencies[] = entity
+package = Features
+
+files[] = uuid_pathauto.install
+files[] = uuid_pathauto.module
+files[] = includes/uuid_pathauto.features.inc
+
+

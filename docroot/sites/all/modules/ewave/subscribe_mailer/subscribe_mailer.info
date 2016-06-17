@@ -1,0 +1,7 @@
+name = Subscribe mailer 
+description = Subscribe mailer - Send mail when content added
+package = Jewish Agency
+core = 7.x
+version = "7.x-1.0"
+
+files[] = subscribe_mailer.module

@@ -1,0 +1,336 @@
+<?php
+
+/**
+ * Implementation of hook cron
+ */
+function domain_subfolder_cron() {
+
+  $tld_file = DRUPAL_ROOT . '/sites/default/files/domains.txt';
+  if (file_exists($tld_file) && (time() - filemtime($tld_file)) > 86400) {
+    //no need to recreate domains
+    //return;
+  }
+}
+
+/**
+ * Control display item on sub domains
+ */
+function domain_subfolder_init() {
+  global $user;
+  $item = menu_get_item();
+  $cur_domain = domain_get_domain();
+  
+  if (!in_array('administrator', $user->roles)) {
+    if (strpos($item['path'], 'admin') === 0) {
+      if (!in_array($cur_domain['domain_id'], $user->domain_user)) {
+        drupal_access_denied();
+        die();
+      }
+    }
+  }
+
+  switch($item['path']) {
+    case 'node/%':
+      if (isset($item['page_arguments'][0]->nid)) {
+        $node = $item['page_arguments'][0];
+        if (!in_array($cur_domain['domain_id'], $node->domains) && !in_array(t('All affiliates'), $node->subdomains)) {
+          drupal_set_message(t('Sorry current item can`t be accessed from this domain'), 'error');
+          drupal_access_denied();
+          die();
+        }
+      }
+      if ($_SERVER['REQUEST_URI'] == '/node/' . $item['original_map'][1]) {
+        drupal_goto(drupal_get_path_alias('node/' . $item['original_map'][1]), array(), '301');
+      }
+      break;
+      
+    case 'node/%/edit':
+      if (!in_array($cur_domain['domain_id'], $user->domain_user) && !in_array('administrator', $user->roles)) {
+        drupal_access_denied();
+        die();
+      }
+      if (isset($item['page_arguments'][0]->nid)) {
+        $node = $item['page_arguments'][0];
+        if (!in_array($cur_domain['domain_id'], $node->domains)) {
+          drupal_set_message(t('Sorry current item can`t be accessed from this domain'), 'error');
+          drupal_access_denied();
+          die();
+        }
+      }
+      break;
+  }
+}
+
+/**
+ * Implement hook_menu() 
+ */
+function domain_subfolder_menu() {
+  $items = array();
+  $items['admin/config/system/update'] = array( 
+    'title' => 'Update subfolder list', 
+    'description' => 'Update domains to subfolder',
+    'page callback' => 'domain_subfolder_update_status', 
+    'access arguments' => array('administer site configuration'), 
+    'type' => MENU_NORMAL_ITEM, 
+  );
+  
+  $items['admin/config/system/update_language'] = array( 
+    'title' => 'Reset urls language', 
+    'description' => 'Reset urls to undefind language',
+    'page callback' => 'domain_subfolder_update_language', 
+    'access arguments' => array('administer site configuration'), 
+    'type' => MENU_NORMAL_ITEM, 
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_query_node_access_alter
+ *
+ * Adds a filter for the current domain.
+ */
+function domain_subfolder_query_node_access_alter(QueryAlterableInterface $query) {
+  $tables = $query->getTables();
+  if (isset($tables['i']) && $tables['i']['table'] == 'search_index') {
+    $domain = domain_get_domain();
+    $query->join('domain_source', 'dnid', 'n.nid = dnid.nid');
+    $query->condition('dnid.domain_id', array(DOMAIN_SETTINGS_ALL_DOMAINS, $domain['domain_id']), 'IN');
+  }
+}
+
+/**
+ * Implements hook_node_update
+ *
+ * Adds a filter for the current domain.
+ */
+function domain_subfolder_node_update($node) {
+  //update language to undefind
+  db_update('url_alias')->fields(array('language' => 'und'))->condition('source', 'node/' . $node->nid)->execute();
+  
+  //clear page cache on update
+  domain_subfolder_clear_cache($node);
+}
+
+/**
+ * Implements hook_node_update
+ *
+ * Adds a filter for the current domain.
+ */
+function domain_subfolder_node_insert($node) {
+  //clear page cache on update
+  domain_subfolder_clear_cache(url('node/' . $node->nid, array('absolute' => true)));
+  if (isset($node->nid) && $node->nid) {
+    domain_subfolder_clear_cache($node);
+  }
+}
+
+/**
+ * Helper function clear specific cache page
+ */
+function domain_subfolder_clear_cache($node) {
+  if (isset($node->nid) && $node->nid) {
+  $domain = domain_get_node_match($node->nid);
+    $path = url('node/' . $node->nid, array('absolute' => true));
+    db_delete('cache_page')
+      ->condition('cid', $path)
+      ->execute();
+  }
+}
+ 
+/**
+ * Helper function update language for node
+ */
+function domain_subfolder_update_language() {
+  //reset all languages for url alias
+  $db = db_update('url_alias')->fields(array('language' => 'und'))->execute();
+  drupal_set_message(t('Language urls reseted to undefind'));
+  return '';
+}
+
+function domain_subfolder_update_status() {
+  domain_subfolder_update();
+  drupal_set_message(t('Domains to folder list updated succesfull'));
+  return '';
+}
+
+function domain_subfolder_domain_path($domain_id, &$path, &$options, $original_path) {
+  global $sites_list, $base_url;
+  if (count($sites_list) == 0) {
+    if (is_file(DRUPAL_ROOT . '/sites/default/files/domains.txt')) {
+      $sites_list = unserialize(file_get_contents(DRUPAL_ROOT . '/sites/default/files/domains.txt'));
+    }
+  }
+  if (isset($options['base_url']) && $options['base_url'] != $base_url) {
+    if (isset($sites_list[$domain_id])) {
+      $options['base_url'] = $base_url . '/' . $sites_list[$domain_id];
+    }
+  }
+}
+
+/**
+ * Helper function to update domains list in htaccess & settings
+ */
+function domain_subfolder_update() {
+  $tld_file = DRUPAL_ROOT . '/sites/default/files/domains.txt';
+  
+  $domains_tld = array();
+  // Table information
+  $header = array(
+    array('data' => t('Id'), 'field' => 'domain_id'),
+    array('data' => t('Site content'), 'field' => 'sitename'),
+    array('data' => t('Content count')),
+    array('data' => t('Unpublished')),
+    array('data' => t('Site'), 'field' => 'subdomain'),
+  );
+
+  // Set up the base query.
+  $query = db_select('domain', 'd')
+    ->fields('d', array('is_default', 'domain_id', 'sitename', 'subdomain', 'scheme', 'valid'));
+  
+  // Add the tablesort.
+  $query = $query
+    ->extend('TableSort')
+    ->orderBy('is_default', 'DESC')
+    ->orderByHeader($header);
+  //$query = $query->extend('PagerDefault')->limit(variable_get('domain_list_size', DOMAIN_LIST_SIZE));
+  // Get the domains.
+  $result = $query->execute();
+  foreach ($result as $data) {
+    if ($data->is_default != 1) {
+      $domains_tld[$data->domain_id] = substr($data->subdomain, 0, strpos($data->subdomain, '.'));
+    }
+  }
+  
+  //save array of domains in txt file
+  file_put_contents($tld_file, serialize($domains_tld));
+  
+  //update htaccess
+  $htaccess = file_get_contents(DRUPAL_ROOT . '/.htaccess');
+  $content = "  # START::DomainAccess-related\n  # Removes the site prefix to ensure file paths still work\n";
+  foreach ($domains_tld as $tld) {
+    $content .= "  RewriteRule ^" . $tld . "(.*) /$1 [L,QSA]\n";
+  }
+  $content .= "  # END::DomainAccess-related";
+    
+  //if domain access already exist we need to replace it
+  if (preg_match('/START\:\:DomainAccess/', $htaccess)) {
+    $htaccess = explode("\n", $htaccess);
+    $flag = 0;
+    foreach ($htaccess as $line => $value) {
+      if ($flag) {
+        unset($htaccess[$line]);
+      }
+      if (trim($value) == '# START::DomainAccess-related') {
+        $htaccess[$line] = $content;
+        $flag = 1;
+      }
+      if (trim($value) == '# END::DomainAccess-related') {
+        $flag = 0;
+      }
+    }
+    $htaccess = implode("\n", $htaccess);
+  } else {
+    $htaccess = str_replace('  # Pass all requests not referring directly to files in the filesystem to', $content . "\n\n" . "  # Pass all requests not referring directly to files in the filesystem to", $htaccess);
+  }
+  file_put_contents(DRUPAL_ROOT . '/.htaccess', $htaccess);
+}
+
+/**
+ * Implements hook_form_alter
+ */
+function domain_subfolder_form_alter(&$form, &$form_state, $form_id) {;
+  $menuitem = menu_get_item();
+  switch($form_id) {
+    case 'views_form_admin_views_node_system_1':
+      $domain = domain_get_domain();
+      $tld = substr($domain['subdomain'], 0, strpos($domain['subdomain'], '.'));
+      if ($tld != 'www') {
+        $form['#action'] = '/' . $tld . $form['#action'];
+      }
+      break;
+
+    default:
+      if ($menuitem['path'] == 'node/%/clone' ||
+          $menuitem['path'] == 'user/%/edit' ||
+          $menuitem['path'] == 'admin/structure/menu/item/%/edit' ||
+          $menuitem['path'] == 'node/%/webform' ||
+          $menuitem['path'] == 'node/%/webform/emails' ||
+          $menuitem['path'] == 'node/%/webform/configure' ||
+          $menuitem['path'] == 'node/%/edit' ||
+          $menuitem['path'] == 'node/%/delete' ||
+          $menuitem['path'] == 'node/%/draft' ||
+          $menuitem['path'] == 'file/add' ||
+          $menuitem['path'] == 'user/login' ||
+          $menuitem['path'] == 'admin/structure/menu/manage/%/add' ||
+          $menuitem['path'] == 'admin/structure/taxonomy/%/add' ||
+          $menuitem['path'] == 'taxonomy/term/%/edit' ||
+          $menuitem['path'] == 'admin/structure/menu/manage/%' ||    
+          $menuitem['path'] == 'admin/structure/menu/item/%/edit' ||
+          $menuitem['path'] == 'taxonomy/term/%/translate' ||
+          $menuitem['path'] == 'admin/structure/taxonomy/%/add' ||
+          $menuitem['path'] == 'admin/structure/menu/item/%/delete' ||
+          preg_match('%node/add%', $menuitem['path'])) {
+        $domain = domain_get_domain();
+        $tld = substr($domain['subdomain'], 0, strpos($domain['subdomain'], '.'));
+        if ($tld != 'www') {
+          if (substr($form['#action'], 0, 5) == '/file' || substr($form['#action'], 0, 5) == '/node' || substr($form['#action'], 0, 5) == '/user' || substr($form['#action'], 0, 21) == '/admin/structure/menu') {
+            $form['#action'] = '/' . $tld . $form['#action'];
+          }
+        }
+      }
+      break;
+  }
+}
+
+/**
+ * Token callback to add unsafe tokens for user mails.
+ */
+/*function domain_subfolder_mail_alter(&$message) {
+  if ($message['id'] == 'user_status_activated') {
+    $account = $message['params']['account'];
+    $domains = domain_get_user_domains($account);
+    $domain = domain_load(array_shift($domains));
+    $absolute = url('', array('absolute' => true));
+    $tld = substr($domain['subdomain'], 0, strpos($domain['subdomain'], '.'));
+    if ($tld != 'www') {
+      $message['body'][0] = str_replace($absolute, $absolute . $tld . '/', $message['body'][0]);
+    }
+  }
+}*/
+
+/**
+* Implements hook_views_data_alter()
+*/
+function domain_subfolder_views_data_alter(&$views_data) {
+  $views_data['node']['edit_link_domain'] = array(
+    'field' => array(
+      'title' => t('Edit link (destination fix)'),
+      'help' => t('Provide a simple link to edit the node.'),
+      'handler' => 'views_handler_field_node_link_edit_domain',
+    ),
+  );
+}
+
+/**
+* Field handler to present a clone node link.
+*
+* Closely modeled after views/modules/node/views_handler_field_node_link_edit.inc
+*/
+class views_handler_field_node_link_edit_domain extends views_handler_field_node_link {
+   /**
+   * Renders the link.
+   */
+  function render_link($node, $values) {
+    // Ensure user has access to edit this node.
+    if (!node_access('update', $node)) {
+      return;
+    }
+
+    $this->options['alter']['make_link'] = TRUE;
+    $this->options['alter']['path'] = "node/$node->nid/edit";
+    $this->options['alter']['query'] = array('destination' => 'admin/content');//drupal_get_destination();
+
+    $text = !empty($this->options['text']) ? $this->options['text'] : t('edit');
+    return $text;
+  }
+}

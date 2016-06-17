@@ -1,0 +1,137 @@
+<?php
+
+/**
+ * @file
+ * Cacheflush module.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function cacheflush_menu() {
+
+  $items['admin/config/development/cacheflush'] = array(
+    'title' => 'Cache Flush',
+    'type' => MENU_NORMAL_ITEM,
+    'description' => 'Create dynamically cache presets.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('cacheflush_list_preset_form'),
+    'access arguments' => array('cacheflush development'),
+    'file' => 'cacheflush.admin.inc',
+  );
+
+  $items['admin/config/development/cacheflush/preset'] = array(
+    'title' => 'Create new preset',
+    'type' => MENU_LOCAL_ACTION,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('cacheflush_preset_form', 5),
+    'access arguments' => array('cacheflush development add'),
+    'weight' => 1,
+    'file' => 'cacheflush.preset.inc',
+  );
+
+  $items['admin/config/development/cacheflush/preset/delete/%'] = array(
+    'title' => 'Delete preset',
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('cacheflush_delete_preset_form', 6),
+    'access arguments' => array('cacheflush development delete'),
+    'file' => 'cacheflush.preset.inc',
+  );
+
+  /**************** Preset's *****************/
+  $items['admin/cacheflush'] = array(
+    'title' => 'Cache Flush',
+    'type' => MENU_NORMAL_ITEM,
+    'description' => 'List cache clear presets',
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('cacheflush preset'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+
+  $items["admin/cacheflush/clearall"] = array(
+    'title' => 'Clear All',
+    'description' => 'Clear all cache.',
+    'page callback' => '_cacheflush_clear_all',
+    'weight' => -50,
+    'access arguments' => array('cacheflush preset clearall'),
+    'file' => 'cacheflush.inc',
+  );
+
+  $cache_presets = variable_get('cacheflush_preset_list', array());
+
+  if ($cache_presets) {
+    foreach ($cache_presets as $key => $value) {
+      if ($value['#enabled'] > 0) {
+        $items["admin/cacheflush/clear/preset/$key"] = array(
+          'title' => $value['#name'],
+          'description' => "Clear " . $value['#name'] . " cache.",
+          'page callback' => 'cacheflush_clear_preset_menu_callback',
+          'page arguments' => array(4),
+          'weight' => $key,
+          'access arguments' => array("cacheflush preset $key"),
+          'file' => 'cacheflush.inc',
+        );
+      }
+    }
+  }
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function cacheflush_permission() {
+
+  $item = array();
+
+  $item['cacheflush development'] = array(
+    'title' => t('List presets'),
+    'description' => t('Access to list presets.'),
+  );
+  $item['cacheflush development add'] = array(
+    'title' => t('Add new preset'),
+    'description' => t('Alow to add new preset.'),
+  );
+  $item['cacheflush development delete'] = array(
+    'title' => t('Delete preset'),
+    'description' => t('Alow to delete preset.'),
+  );
+
+  $item['cacheflush preset'] = array(
+    'title' => t('Cacheflusher menu'),
+    'description' => t('Access to presets.'),
+  );
+  $item['cacheflush preset clearall'] = array(
+    'title' => t('Clear All'),
+    'description' => t('Alow to clear all caches.'),
+  );
+
+  $cache_presets = variable_get('cacheflush_preset_list', array());
+
+  if ($cache_presets) {
+    foreach ($cache_presets as $key => $value) {
+      $item["cacheflush preset $key"] = array(
+        'title' => t("Preset @name", array('@name' => $value['#name'])),
+        'description' => t("Alow to clear caches for @name preset.", array('@name' => $value['#name'])),
+      );
+    }
+  }
+
+  return $item;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function cacheflush_theme() {
+
+  return array(
+    'cacheflush_advanced_form_table' => array(
+      'render element' => 'form',
+      'file' => 'cacheflush.admin.inc',
+    ),
+  );
+}

@@ -1,0 +1,4 @@
+.blogArticleFooter div.fb-comments-count, .shareArticle div.fb-comments-count {
+  line-height: normal !important;
+  display: inline;
+}

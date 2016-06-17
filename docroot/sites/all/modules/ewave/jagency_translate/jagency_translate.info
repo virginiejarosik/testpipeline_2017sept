@@ -1,0 +1,5 @@
+name = Jewish Agency Translate
+description = 
+package = Jewish Agency
+core = 7.x
+version = "7.x-1.0"

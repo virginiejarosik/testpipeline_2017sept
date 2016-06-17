@@ -1,0 +1,5 @@
+name = Jewish Agency Migrate
+description = Fetch all content from old site and convert it to new one
+package = Jewish Agency
+core = 7.x
+version = "7.x-1.0"

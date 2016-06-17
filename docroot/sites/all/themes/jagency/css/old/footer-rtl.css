@@ -1,0 +1,28 @@
+footer { clear: both; min-width: 980px; background-color: #26323f; }
+
+.social { clear: both; min-width: 980px; background-color: #3f4e5e; }
+.socialInner { width: 980px; height: 64px; overflow: hidden; margin: 0 auto; }
+.socialInner ul { padding-top: 21px; }
+.socialInner ul li { float: right; display: block; list-style: none; padding-top: 3px; }
+.socialInner ul li + li { margin-right: 20px; }
+.socialInner .linkBorder { color: #f9f9f8; }
+
+.contactUsFooter { float: left; color: #f9f9f8; }
+.contactUsFooter span { font-size: 19px; vertical-align: middle; padding-left: 10px; font-family: Baskerville,Times New Roman,Serif; }
+
+.footer { width: 980px; overflow: hidden; padding-top: 30px; margin: 0 auto; text-align: center; }
+.footer > * { margin-bottom: 25px; color: #9ab1c8; font: 11px/15px Arial; text-align: center; }
+.footer ul { display: inline-block; list-style: none; }
+.footer ul li { display: inline; }
+
+.footer .externalLinks li + li { margin-right: 40px; }
+
+.footer ul.link { margin-bottom: 15px; }
+.footer ul.link li + li { margin-right: 10px; }
+.footer ul.link a { color: #9ab1c8; font: 11px/15px Arial; }
+
+.footer .helpfulLink { border-bottom: solid 1px #424f5c; }
+.footer .helpfulLink th { color: #fff; font: 18px/1.3 Baskerville,Times New Roman,Serif; padding-bottom: 20px; padding-left: 40px; }
+.footer .helpfulLink ul { display: inline-block; padding-bottom: 35px;  }
+.footer .helpfulLink ul li { width: 123px; float: right; display: block; padding-left: 40px; }
+.footer .helpfulLink ul a { color: #9ab1c8; font: 11px/18px Arial; padding-bottom: 10px; }

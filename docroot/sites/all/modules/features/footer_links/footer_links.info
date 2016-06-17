@@ -1,0 +1,10 @@
+name = Footer links
+description = Footer menu links
+core = 7.x
+package = Jewish Agency
+version = 7.x-1.1
+project = footer_links
+dependencies[] = features
+dependencies[] = menu
+features[features_api][] = api:2
+features[menu_custom][] = menu-footer

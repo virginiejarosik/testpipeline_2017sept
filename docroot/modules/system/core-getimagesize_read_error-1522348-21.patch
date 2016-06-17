@@ -1,0 +1,16 @@
+diff --git a/modules/system/image.gd.inc b/modules/system/image.gd.inc
+index 91c0b05..b09ce47 100644
+--- a/modules/system/image.gd.inc
++++ b/modules/system/image.gd.inc
+@@ -346,7 +346,10 @@ function image_gd_create_tmp(stdClass $image, $width, $height) {
+  */
+ function image_gd_get_info(stdClass $image) {
+   $details = FALSE;
+-  $data = getimagesize($image->source);
++  $img = drupal_realpath($image->source);
++  if (filesize($img)) {
++    $data = getimagesize($img);
++  }
+ 
+   if (isset($data) && is_array($data)) {
+     $extensions = array('1' => 'gif', '2' => 'jpg', '3' => 'png');

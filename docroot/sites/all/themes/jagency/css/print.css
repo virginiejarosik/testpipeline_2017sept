@@ -1,0 +1,14 @@
+a[href]:after { content: "" !important; }
+.fixedWrapper, .fixedWrapper.fixed { position: static !important; }
+menu ul { display: none !important; }
+header { display: none !important; }
+footer { display: none !important; }
+.shareStory { display: none !important; }
+.storyHead .share { display: none !important; }
+.wrapper aside.fLeft { display: none !important; }
+.wrapper .col730.fRight { margin: 0 auto; float: none !important; }
+.subscribe { display: none !important; }
+
+.jaArticle { float: none !important; }
+.shareArticle { display: none !important; }
+.facebookComments { display: none !important; }

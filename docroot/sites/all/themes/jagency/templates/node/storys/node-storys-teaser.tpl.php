@@ -1,0 +1,1 @@
+<?php print strip_tags(render($content['field_main_image']), "<img><a>"); ?>

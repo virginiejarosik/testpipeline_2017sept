@@ -1,0 +1,243 @@
+<?php
+
+/**
+ * @file
+ * Cacheflush advanced preset form.
+ */
+
+/**
+ * Implements hook_form_alter().
+ */
+function cacheflush_advanced_form_alter(&$form, &$form_state, $form_id) {
+
+  if ($form_id != 'cacheflush_preset_form') {
+    return;
+  }
+
+  $form['vertical_tabs_advance'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Custom (advanced)'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#group' => 'cacheflush_vertical_tabs',
+    '#tree' => TRUE,
+    '#weight' => count($form_state['cacheflush_vertical_tabs']),
+  );
+
+  // Advanced table form.
+  $form['vertical_tabs_advance']['cacheflush_advanced_table'] = array(
+    '#theme' => 'cacheflush_advanced_form_table',
+    '#prefix' => '<div id="cacheflush-advanced-settings-table">',
+    '#suffix' => '</div>',
+  );
+
+  // Check if Ajax call.
+  if (isset($form_state['clicked_button']) && ($form_state['clicked_button']['#name'] == 'add' || strpos($form_state['clicked_button']['#name'], 'remove_') === 0)) {
+
+    // Check if Remove row and remove.
+    if (strpos($form_state['clicked_button']['#name'], 'remove_') === 0) {
+      list($null, $remove_id) = explode('remove_', $form_state['clicked_button']['#name']);
+      unset($form_state['input']['vertical_tabs_advance']['cacheflush_advanced_table'][$remove_id]);
+    }
+
+    // ReCreat table.
+    if (isset($form_state['input']['vertical_tabs_advance']['cacheflush_advanced_table'])) {
+      foreach ($form_state['input']['vertical_tabs_advance']['cacheflush_advanced_table'] as $key => $value) {
+        if ('remove_' . $key != $form_state['clicked_button']['#name']) {
+          $form['vertical_tabs_advance']['cacheflush_advanced_table'][$key] = _cacheflush_advanced_table_row($key, $value['cid'], $value['table'], ($value['wildcard']) ? TRUE : FALSE);
+        }
+      }
+    }
+
+    // Check if Add row and add 1 more.
+    if ($form_state['clicked_button']['#name'] == 'add') {
+      $id = 1;
+      if (isset($form_state['input']['vertical_tabs_advance']['cacheflush_advanced_table'])) {
+        $id = max(array_keys($form_state['input']['vertical_tabs_advance']['cacheflush_advanced_table'])) + 1;
+      }
+      $form['vertical_tabs_advance']['cacheflush_advanced_table'][$id] = _cacheflush_advanced_table_row($id);
+    }
+  }
+  else {
+    // If is preset edit add the advanced preset rows.
+    if ($form_state['cacheflush_preset_is_edit']) {
+      $i = 0;
+      foreach ($form_state['cacheflush_preset_list'][$form_state['cacheflush_preset_id']]['#cacheflush_preset_values'] as $key => $value) {
+        $pos = strpos($key, 'advanced-preset-');
+        if ($pos !== FALSE) {
+          $form['vertical_tabs_advance']['cacheflush_advanced_table'][$i] = _cacheflush_advanced_table_row($i, $value['query']['cid'], $value['query']['table'], ($value['query']['wildcard']) ? TRUE : FALSE);
+          $i++;
+        }
+      }
+    }
+    else {
+      // Add 1 row by default.
+      $form['vertical_tabs_advance']['cacheflush_advanced_table'][0] = _cacheflush_advanced_table_row(0);
+    }
+  }
+
+  // Add new row button.
+  $form['vertical_tabs_advance']['add'] = array(
+    '#name' => 'add',
+    '#type' => 'button',
+    '#value' => t('Add another row'),
+    '#limit_validation_errors' => array(),
+    '#ajax' => array(
+      'callback' => '_cacheflush_advanced_form_callback',
+      'wrapper' => 'cacheflush-advanced-settings-table',
+      'method' => 'replace',
+      'effect' => 'fade',
+    ),
+  );
+
+  $form['vertical_tabs_advance']['note'] = array(
+    '#type' => 'item',
+    '#title' => t('Note'),
+    '#weight' => -10,
+    '#description' => t('Create custom preset which will use the <a href="@href">cache_clear_all()</a> function.', array('@href' => 'http://api.drupal.org/api/drupal/includes!cache.inc/function/cache_clear_all/6')) .
+    '<ul><li>' . t('<b>Cache ID ($cid)</b>: The cache ID to delete.') .
+    '</li><li>' . t('<b>Table ($table)</b>: The name of the table to delete from.') .
+    '</li><li>' . t('<b>Wildcard ($wildcard)</b>: If wildcard is TRUE, cache ID`s starting with $cid are deleted in addition to the exact cache ID specified by $cid.') .
+    '</li></ul>',
+  );
+
+  $form['#validate'][] = 'cacheflush_advanced_preset_form_validate';
+}
+
+/**
+ * Implements advanced preset validation.
+ */
+function cacheflush_advanced_preset_form_validate(&$form, &$form_state) {
+
+  // Check for advanced preset.
+  if (isset($form_state['values']['vertical_tabs_advance']['cacheflush_advanced_table'])) {
+    foreach ($form_state['input']['vertical_tabs_advance']['cacheflush_advanced_table'] as $key => $value) {
+      if (isset($value['wildcard']) || $value['cid'] || $value['table']) {
+        if ($value['cid'] && $value['table']) {
+          unset($value['operations']);
+          $form_state['cacheflush_preset_list'][$form_state['cacheflush_preset_id']]['#cacheflush_preset_values']["advanced-preset-$key"] = array(
+            'is_table' => TRUE,
+            'query' => $value,
+          );
+        }
+        else {
+          if (isset($value['wildcard']) && (!$value['cid'] && !$value['table'])) {
+            form_error($form['vertical_tabs_advance']['cacheflush_advanced_table'][$key]['cid'], t('The cache ID field is mandatory.'));
+            form_error($form['vertical_tabs_advance']['cacheflush_advanced_table'][$key]['table'], t('The table field is mandatory.'));
+          }
+          elseif (!$value['cid']) {
+            form_error($form['vertical_tabs_advance']['cacheflush_advanced_table'][$key]['cid'], t('The cache ID field is mandatory.'));
+          }
+          else {
+            form_error($form['vertical_tabs_advance']['cacheflush_advanced_table'][$key]['table'], t('The table field is mandatory.'));
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Theme cacheflush table for advanced preset.
+ * 
+ * @param array $variables
+ *   Theme variables.
+ *
+ * @return array
+ *   Table theme.
+ */
+function theme_cacheflush_advanced_form_table($variables) {
+
+  $form = $variables['form'];
+  $rows = array();
+  foreach (element_children($form) as $key) {
+    $rows[$key] = array(
+      'data' => array(
+        drupal_render($form[$key]['cid']),
+        drupal_render($form[$key]['table']),
+        drupal_render($form[$key]['wildcard']),
+        drupal_render($form[$key]['operations']),
+      ),
+    );
+  }
+
+  $headers = array(
+    t('Cache ID'),
+    t('Table'),
+    t('Wildcard'),
+    t('Operations'),
+  );
+
+  return theme('table', array('header' => $headers, 'rows' => $rows));
+}
+
+/**
+ * Build cacheflush custom settings row form elements.
+ *
+ * @param int $delta
+ *   Row weight.
+ * @param string $cid
+ *   Cache ID. 
+ * @param string $table
+ *   Table id to be flushed.
+ * @param boolan $wildcard
+ *   Wildcard checkbox value.
+ *
+ * @return string
+ *   Advanced table row. 
+ */
+function _cacheflush_advanced_table_row($delta, $cid = '', $table = '', $wildcard = FALSE) {
+  static $table_options;
+
+  if (empty($table_options)) {
+    $cache_tables = array_merge(array(
+      'cache',
+      'cache_block',
+      'cache_filter',
+      'cache_page',
+        ), module_invoke_all('flush_caches'));
+    asort($cache_tables);
+    $table_options = array_combine($cache_tables, $cache_tables);
+    array_unshift($table_options, "- Select a table -");
+  }
+
+  $form['cid'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $cid,
+    '#size' => 20,
+  );
+  $form['table'] = array(
+    '#type' => 'select',
+    '#default_value' => $table,
+    '#options' => $table_options,
+  );
+  $form['wildcard'] = array(
+    '#title' => t('TRUE'),
+    '#type' => 'checkbox',
+    '#default_value' => $wildcard,
+  );
+  $form['operations'] = array(
+    '#name' => 'remove_' . $delta,
+    '#type' => 'button',
+    '#value' => t('Remove'),
+    '#limit_validation_errors' => array(),
+    '#ajax' => array(
+      'callback' => '_cacheflush_advanced_form_callback',
+      'wrapper' => 'cacheflush-advanced-settings-table',
+      'method' => 'replace',
+      'effect' => 'fade',
+    ),
+  );
+
+  return $form;
+}
+
+/**
+ * AJAX callback for advanced table.
+ *
+ * @return array
+ *   Advanced preset table via ajax.
+ */
+function _cacheflush_advanced_form_callback($form, $form_state) {
+  return $form['vertical_tabs_advance']['cacheflush_advanced_table'];
+}

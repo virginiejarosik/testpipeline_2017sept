@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * 
+ * Update module weight, we need to be executed after all modules
+ */
+/*function jagency_pages_update_6005() {
+  $result = _jagency_pages_set_module_maximum_weight();
+  return array(array('success' => $result !== FALSE, 'query' => 'Module weight update'));  
+}
+
+/**
+ * Set maximum weight to the module
+ */
+/*function _jagency_pages_set_module_maximum_weight() {
+  $weight = db_query("SELECT MIN(weight) FROM {system} WHERE type = 'module'")->fetchCol();
+  db_update('system')
+    ->fields(array('weight' => $weight[0] - 1))
+    ->condition('name', 'jagency_pages', '=')
+    ->execute();
+  return array(array('success' => true, 'query' => 'Weight changed'));  
+}
+function jagency_pages_update_8005() {
+  // Get the contents of the .sql file.
+  $sql = file_get_contents(drupal_get_path('module', 'jagency_pages') . '/program_order_fields.sql');
+  // Split into individual statements based on new lines.
+  $statements = preg_split('/[\n\r]+/', $sql);
+
+  foreach ($statements as $query) {
+    db_query($query);
+  }
+}
+*/

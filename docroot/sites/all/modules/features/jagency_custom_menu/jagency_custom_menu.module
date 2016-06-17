@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the jagency_custom_menu feature.
+ */
+
+include_once 'jagency_custom_menu.features.inc';

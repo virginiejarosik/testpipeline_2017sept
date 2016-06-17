@@ -1,0 +1,202 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for the cacheflush module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function cacheflush_install() {
+
+  $core = array(
+    'cache' => array(
+      'is_table' => TRUE,
+      'description' => "Generic cache table for caching things not separated out...",
+      'category' => 'core',
+    ),
+    'cache_path' => array(
+      'is_table' => TRUE,
+      'description' => "Cache table for path alias lookup.",
+      'category' => 'core',
+    ),
+    'cache_filter' => array(
+      'is_table' => TRUE,
+      'description' => "Cache table for the Filter module to store already...",
+      'category' => 'core',
+    ),
+    'cache_bootstrap' => array(
+      'is_table' => TRUE,
+      'description' => "Cache table for data required to bootstrap Drupal, may be...",
+      'category' => 'core',
+    ),
+    'cache_page' => array(
+      'is_table' => TRUE,
+      'description' => "Cache table used to store compressed pages for anonymous...",
+      'category' => 'core',
+    ),
+    'cache_form' => array(
+      'is_table' => TRUE,
+      'description' => "Cache table for the form system to store recently built...",
+      'category' => 'core',
+    ),
+    'cache_menu' => array(
+      'is_table' => TRUE,
+      'description' => "Cache table for the menu system to store router...",
+      'functions' => array('node_types_rebuild', 'menu_rebuild'),
+      'category' => 'core',
+    ),
+    'cache_update' => array(
+      'is_table' => TRUE,
+      'description' => "Cache table for the Update module to store information...",
+      'category' => 'core',
+    ),
+    'query-strings' => array(
+      'is_table' => FALSE,
+      'description' => "Change query-strings on css/js files to enforce reload for all users.",
+      'functions' => array('_drupal_flush_css_js'),
+      'category' => 'functions',
+    ),
+    'css' => array(
+      'is_table' => FALSE,
+      'description' => "Empty the css cache.",
+      'functions' => array('drupal_clear_css_cache'),
+      'category' => 'functions',
+    ),
+    'js' => array(
+      'is_table' => FALSE,
+      'description' => "Empty the js cache.",
+      'functions' => array('drupal_clear_js_cache'),
+      'category' => 'functions',
+    ),
+    'registry' => array(
+      'is_table' => FALSE,
+      'description' => "Empty the registry cache.",
+      'functions' => array('registry_rebuild'),
+      'category' => 'functions',
+    ),
+    'theme' => array(
+      'is_table' => FALSE,
+      'description' => "Rebuild the theme data.",
+      'functions' => array('system_rebuild_theme_data', 'drupal_theme_rebuild'),
+      'category' => 'functions',
+    ),
+    'entity_info' => array(
+      'is_table' => FALSE,
+      'description' => "Empty the entity info cache.",
+      'functions' => array('entity_info_cache_clear'),
+      'category' => 'functions',
+    ),
+    'actions_synchronize' => array(
+      'is_table' => FALSE,
+      'description' => "Synchronize to catch any actions that were added or removed.",
+      'functions' => array('actions_synchronize'),
+      'category' => 'functions',
+    ),
+    'update_bootstrap' => array(
+      'is_table' => FALSE,
+      'description' => "Rebuild the bootstrap module list. We do this here so that developers can get new hook_boot() implementations registered without having to write a hook_update_N() function.",
+      'functions' => array('_system_update_bootstrap_status'),
+      'category' => 'functions',
+    ),
+    'update_bootstrap' => array(
+      'is_table' => FALSE,
+      'description' => "Rebuild the bootstrap module list. We do this here so that developers can get new hook_boot() implementations registered without having to write a hook_update_N() function.",
+      'functions' => array('_system_update_bootstrap_status'),
+      'category' => 'functions',
+    ),
+    'admin_menu' => array(
+      'is_table' => FALSE,
+      'description' => "The administration menu clear cache function.",
+      'functions' => array('admin_menu_flush_caches'),
+      'category' => 'often',
+    ),
+    'ctools' => array(
+      'is_table' => FALSE,
+      'description' => "The Ctools clear cache function",
+      'functions' => array('ctools_flush_caches'),
+      'category' => 'often',
+    ),
+  );
+
+  cacheflush_predefined_presets();
+
+  variable_set('cacheflush_global_config', $core);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function cacheflush_uninstall() {
+
+  variable_del('cacheflush_global_config');
+  variable_del('cacheflush_preset_list');
+}
+
+/**
+ * Creating predefined presets. 
+ */
+function cacheflush_predefined_presets() {
+
+  $predefined_presets = array(
+    '1' => array(
+      '#name' => 'Class registry',
+      '#editable' => FALSE,
+      '#enabled' => TRUE,
+      '#cacheflush_preset_values' => array(
+        'predefined_class_registry' => array(
+          'is_table' => FALSE,
+          'functions' => array(
+            '0' => 'registry_rebuild',
+          ),
+        ),
+      ),
+    ),
+    '2' => array(
+      '#name' => 'CSS and JavaScript',
+      '#editable' => FALSE,
+      '#enabled' => TRUE,
+      '#cacheflush_preset_values' => array(
+        'predefined_css_and_js' => array(
+          'is_table' => FALSE,
+          'functions' => array(
+            '0' => '_drupal_flush_css_js',
+            '1' => 'drupal_clear_css_cache',
+            '2' => 'drupal_clear_js_cache',
+            '3' => 'cache_clear_all',
+          ),
+        ),
+      ),
+    ),
+    '3' => array(
+      '#name' => 'Menu',
+      '#editable' => FALSE,
+      '#enabled' => TRUE,
+      '#cacheflush_preset_values' => array(
+        'predefined_css_and_js' => array(
+          'is_table' => FALSE,
+          'functions' => array(
+            '0' => 'node_types_rebuild',
+            '1' => 'menu_rebuild',
+          ),
+        ),
+      ),
+    ),
+    '4' => array(
+      '#name' => 'Theme registry',
+      '#editable' => FALSE,
+      '#enabled' => TRUE,
+      '#cacheflush_preset_values' => array(
+        'predefined_css_and_js' => array(
+          'is_table' => FALSE,
+          'functions' => array(
+            '0' => 'system_rebuild_theme_data',
+            '1' => 'drupal_theme_rebuild',
+          ),
+        ),
+      ),
+    ),
+  );
+  variable_set('cacheflush_preset_list', $predefined_presets);
+}

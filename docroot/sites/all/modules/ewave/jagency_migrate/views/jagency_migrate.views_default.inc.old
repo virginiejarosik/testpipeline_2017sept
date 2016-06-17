@@ -1,0 +1,78 @@
+<?php
+
+/**
+ * Implements hook_views_default_views().
+ */
+function node_views_default_views() {
+  $export = array();
+  
+  $view = new view();
+  $view->name = 'agency_migrate_result';
+  $view->description = '';
+  $view->tag = 'default';
+  $view->base_table = 'migration';
+  $view->human_name = 'Agency Migrate Result';
+  $view->core = 7;
+  $view->api_version = '3.0';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+  
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['title'] = 'Agency Migrate Result';
+  $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'none';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '25';
+  $handler->display->display_options['style_plugin'] = 'table';
+  /* Field: Migrate: Url */
+  $handler->display->display_options['fields']['url']['id'] = 'url';
+  $handler->display->display_options['fields']['url']['table'] = 'migration';
+  $handler->display->display_options['fields']['url']['field'] = 'url';
+  /* Field: Migrate: Hash */
+  $handler->display->display_options['fields']['hash_1']['id'] = 'hash_1';
+  $handler->display->display_options['fields']['hash_1']['table'] = 'migration';
+  $handler->display->display_options['fields']['hash_1']['field'] = 'hash';
+  /* Field: Migrate: Http Status */
+  $handler->display->display_options['fields']['http_status']['id'] = 'http_status';
+  $handler->display->display_options['fields']['http_status']['table'] = 'migration';
+  $handler->display->display_options['fields']['http_status']['field'] = 'http_status';
+  /* Field: Migrate: Status */
+  $handler->display->display_options['fields']['status']['id'] = 'status';
+  $handler->display->display_options['fields']['status']['table'] = 'migration';
+  $handler->display->display_options['fields']['status']['field'] = 'status';
+  
+  /* Display: Content pane */
+  $handler = $view->new_display('panel_pane', 'Content pane', 'panel_pane_1');
+  $translatables['agency_migrate_result'] = array(
+    t('Master'),
+    t('Agency Migrate Result'),
+    t('more'),
+    t('Apply'),
+    t('Reset'),
+    t('Sort by'),
+    t('Asc'),
+    t('Desc'),
+    t('Items per page'),
+    t('- All -'),
+    t('Offset'),
+    t('« first'),
+    t('‹ previous'),
+    t('next ›'),
+    t('last »'),
+    t('Url'),
+    t('Hash'),
+    t('Http Status'),
+    t('Status'),
+    t('.'),
+    t(','),
+    t('Content pane'),
+    t('View panes'),
+  );
+  
+  $export['agency_migrate_result'] = $view;
+
+  return $export;
+}

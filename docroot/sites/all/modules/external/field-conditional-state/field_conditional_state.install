@@ -1,0 +1,104 @@
+<?php
+
+/**
+ * @file
+ * Install function for the field_conditional_state module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function field_conditional_state_install() {
+  // Set the module weight to 100.
+  $q = db_update('system');
+  $q->fields(array('weight' => 100));
+  $q->condition('name', 'field_conditional_state');
+  $q->execute();
+}
+
+/**
+ * Implements hook_schema().
+ */
+function field_conditional_state_schema() {
+  $schema['field_conditional_states'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'The internal identifier condition.',
+      ),
+      'group_id' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The field conditional states group id.',
+      ),
+      'control_field' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+        'description' => 'The control field name.',
+      ),
+      'trigger_state' => array(
+        'type' => 'varchar',
+        'length' => '15',
+        'not null' => TRUE,
+        'description' => 'The trigger state.',
+      ),
+      'trigger_value' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+        'description' => 'The trigger value.',
+      ),
+    ),
+    'primary key' => array('id'),
+    'foreign keys' => array(
+      'field_conditional_states_groups' => array(
+        'table' => 'field_conditional_states_groups',
+        'columns' => array('group_id' => 'group_id'),
+      ),
+    ),
+  );
+
+  $schema['field_conditional_states_groups'] = array(
+    'fields' => array(
+      'group_id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'The internal identifier.',
+      ),
+      'state' => array(
+        'type' => 'varchar',
+        'length' => '15',
+        'not null' => TRUE,
+        'description' => '',
+      ),
+      'entity_type' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+        'description' => '',
+      ),
+      'bundle' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+        'description' => '',
+      ),
+      'field_name' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+        'description' => '',
+      ),
+      'type' => array(
+        'type' => 'varchar',
+        'length' => '3',
+        'not null' => TRUE,
+        'description' => 'The logical connection.',
+      ),
+    ),
+    'primary key' => array('group_id'),
+  );
+
+  return $schema;
+}

@@ -1,0 +1,20 @@
+diff --git a/metatag.module b/metatag.module
+index c24e291..f7ad8e4 100644
+--- a/metatag.module
++++ b/metatag.module
+@@ -384,6 +378,15 @@ function metatag_metatags_save($type, $id, $metatags, $language) {
+     return;
+   }
+ 
++  // Certain modules, e.g. Workbench Moderation, will cause the data to be in
++  // an unsupported format; the problem needs to be resolved elsewhere so this
++  // can only be considered a temporary fix.
++  // TODO: Solve the core problem, which will probably entail something
++  // similar to http://drupal.org/node/1876034.
++  if (isset($metatags[$language])) {
++    $metatags = $metatags[$language];
++  }
++
+   // Allow other modules to alter the meta tags prior to saving using
+   // hook_metatag_presave().
+   foreach (module_implements('metatag_presave') as $module) {

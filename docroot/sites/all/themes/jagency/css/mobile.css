@@ -1,0 +1,195 @@
+@charset "UTF-8";
+
+/*@media only screen and (max-device-width: 420px) {*/
+@media only screen and (max-width: 768px) {
+
+    .wrapper { width: 100%; }
+    h1 { clear: both; }
+
+    header { min-width: 0px; }
+    header .wrapper { padding: 7px 5px 0; }
+    #top_donate_now,
+    #find_opportunity { font-size: 14px; }
+    header .headNav li { padding: 0 5px; }
+    header .languages button { color: #fff; font: 16px/1 Arial; background: url(../images/world.png) 0px 5px no-repeat !important; }
+    header .languages button:after { border: none; }
+    header .languages ul { right: -1px; }
+    .logoAndSearch { width: 100%; min-height: 96px; position: relative; z-index: 1; }
+    .logoAndSearch .logo { float: left; }
+    .logoAndSearch .searchBtn { width: 70px; height: 96px; display: block; position: absolute; top: 0px; right: 0px; z-index: 2; border-left: solid 1px #ddd; background: #fff url(../images/searchIconM.png) center no-repeat; }
+    .logoAndSearch .searchBtnActive { background: #f8f8f7 url(../images/searchIconM.png) center no-repeat !important; }
+    .logoAndSearch .searchRow { position: absolute; top: 97px; right: 0px; z-index: 2; width: 94%; height: 59px; background: #3f4e5e; padding: 8px 3%; display: none; }
+    .searchRow .search.ui-widget { width: 100%; }
+    .searchRow .search.ui-widget input { width: 100%; height: 59px; padding: 0 2%; background: #848e98; border: none; border-radius: 5px; font: 18px/59px Arial; color: #eff2f4; }
+    .searchRow .search.ui-widget #search_submit { position: absolute; top: 13px; right: 7px; text-indent: -9999px; background: url(../images/searchIconOpenM.png) 0 0 no-repeat; }
+    .searchRow .search.ui-widget #menu-container { width: 100%; }
+    menu { width: 100%; height: 129px; margin-bottom: 30px; }
+    menu ul { display: block; float: none !important; margin-top: 0px; border-top: solid 1px #ddd; }
+    menu ul li { width: 49.5%; }
+    menu ul li a { width: 100% !important; }
+    menu ul li a, 
+    menu ul li a:after { background: none !important; color: #5f5f5f !important; }
+    menu ul li:hover > a { width: 100%; margin: 0px; }
+    menu ul li > div { display: none !important; }
+    .col480.fLeft .ui-selectmenu-button { width: 100% !important; }
+
+    .breadCrumbs { clear: both; width: 96%; min-height: 20px; height: auto; padding: 0 2%; line-height: 39px; }
+    .breadCrumbs > * { margin: 0 !important; }
+
+    #block-system-main,
+    .blogArticleFooter,
+    .blogAuthor,
+    #block-jagency-pages-jagency-topcontent .wrapper p { width: 96%; padding: 0 2%; }
+    .facebookComments { width: 74.5%; }
+    #categories,
+    .jspContainer,
+    .jspPane { width: 100% !important; }
+    .subscribe { margin-right: 2%; }
+
+    aside { width: 96%; float: none; padding: 0 2%; }
+    aside .region.region-sidebar-first { position: static !important; }
+    #block-jagency-pages-jagency-topcontent .wrapper h1 { width: 96%; padding-right: 2%; padding-left: 2%; }
+
+    .articleGallery { width: 100%; height: 100%; }
+    #articleGallery li img { width: 100% !important; }
+    .carouselCaption.carouselCaption_ { width: 96%; padding: 0 2%; }
+
+    .lpGallery { width: 100%; margin: 0; }
+    .lpGallery > a { width: 49%; float: left; }
+    .lpGallery > a > img,
+    .lpVideoGallery img { width: 100%; }
+    .lpGallery img { width: 49%; }
+    .lpGallery > a:nth-child(odd) { margin-right: 2%; }
+    .playBtn { top: 45%; left: 45%; }
+    .videoframe iframe { width: 150% !important; }
+    .topBanner { width: 100%; }
+    .col480 { width: 96%; padding-right: 2%; padding-left: 2%; }
+    .panels-flexible-region-experience_israel_main-right { width: 100%; }
+
+    .blogs article,
+    .blogs article > div > a > img { width: 100%; }
+    .carouselCaption { width: 96%; padding: 0 2%; }
+    .turquoiseBg { width: 86.5%; }
+    .contributors { width: 100%; }
+    .moreabout_with_stories { width: 100% !important; }
+    .col230 { width: 100%; }
+    aside .nav { background: #f1f2f4; border-top: solid 1px #d0d5d9; border-bottom: solid 1px #d0d5d9; margin-bottom: 20px; display: none; }
+    aside .nav li { position: relative; padding-left: 15px; border-bottom: none; }
+    aside .nav li a { color: #234f7c; }
+    aside .nav li.active,
+    aside .nav li:hover { background: #f1f2f4; }
+    aside .nav li.active a { border-left: none !important; color: #5f5f5f !important; }
+    aside .nav li.active a:before { position: absolute; top: 11px; left: 15px; height: 0px; content: url("../images/navArrow.png"); display: block; font: bold 14px/1 Arial; }
+    .board { position: relative; float: right; margin-right: 6%; }
+    .board a { color: #3f4e5e; font-size: 22px; line-height: 50px; text-decoration: none; cursor: pointer; }
+    .board a:after { position: absolute; top: 18px; left: 58px; height: 0px; content: url("../images/manuArrow.png"); display: block; }
+
+    .allPosts ul li { width: 100%; }
+    .allPosts ul li > a { float: none; display: block; text-align: center; }
+    .allPosts ul li > div { display: block; width: 100%; text-align: center; padding: 0px; border-left: none !important; }
+    .blogs .pager a, 
+    .moreBlogsBtn, 
+    .pager-load-more a { width: 100%; }
+    .blogs article section .footnote { width: 92%; }
+
+    #gallery { margin-bottom: 30px; }
+    #gallery li { width: 100% !important; height: 280px !important; position: relative; }
+    .field-collection-view { padding: 0 !important; margin: 0 !important; }
+    #block-jagency-pages-jagency-slider-block .gallery980 #gallery li .pic,
+    #block-system-main .gallery980 #gallery li .pic { width: 100% !important; height: 200px !important; }
+    #gallery li .picText { width: 94%; top: 10px; left: 10px !important; }
+    #gallery li .picText .info { display: none !important; }
+    .photoCR { display: none; }
+    .anythingSlider .panel { z-index: 12; }
+    .gallery980 .picText a { z-index: 13; }
+    .gallery980 .picText h3 { font-size: 28px; }
+
+    .blogs article,
+    .blogs article > div img { width: 100%; }
+    .blogs article section { width: 86%; padding: 25px 7% 55px; }
+    .blogsCategory > a > img { width: 100%; height: auto; }
+    .blogsCategory article { width: 81%; height: auto; }
+    .blogsCategory article .footnote { width: 100%; }
+    #contributors { width: 100%; }
+    .toTop { display: none; }
+    .stickyWrapper { height: auto !important; }
+    .opportunities figure { float: left; }
+    .opportunities .text { width: 100%; }
+
+    .picList480 { margin-right: 0px; }
+    .picList480 li { width: 100%; margin-right: 0px; }
+    .resources { width: 86%; }
+
+    .region.region-google-map,
+    .region.region-footer { display: none !important; }
+
+    .filter { text-align: center; }
+    .filter .fRight { float: none; margin-top: 8px; }
+    .moreabout_with_stories .picList230 { margin-right: 0px !important; }
+    .panels-flexible-row { min-width: 0; padding: 0 0 5%; }
+    .col730,
+    .opportunity,
+    .hompage-content-inside .col730,
+    .hompage-content-inside .panels-flexible-region-last,
+    .panels-flexible-row-experience_israel_main-1-inside .col730 { width: 100% !important; padding: 0; }
+    .picList230.single li,
+    .grey > .inside,
+    .col730 .wrapper { width: 100% !important; }
+    .grey { width: 100%; min-width: 100%; border-top: none; }
+    .panels-flexible-region-inside { padding-right: 0px; padding-left: 0px; }
+    .picList230 { margin-right: 0px; }
+    .views-exposed-form .views-exposed-widget { padding: .5em 0 0 0; margin-right: 0; }
+    .picList230 li { width: 49%; height: auto !important; margin-right: 0; }
+    .picList230 li + li { margin-left: 0; }
+    .picList230 li:nth-child(odd) { margin-right: 2%; }
+    .picList230 li a { text-align: center; }
+    .picList230 li a img,
+    .picList230 li img { display: block; width: 100%; height: auto; }
+
+    .picIntro figcaption table tbody tr td { text-align: center; }
+
+    .countries > span { display: inline-block; width: 50%; float: right; padding-bottom: 10px; text-align: right; }
+    .countries span img { float: right; }
+
+    .externalLinks,
+    .contactUsFooter { display: none; }
+
+    .lastUnit .inside .panel-pane.pane-node .pane-content div p img { max-width: 100%; }
+
+    footer { min-width: 0px; width: 100%; }
+    footer .top { height: 45px; padding: 0 3%; }
+    footer .top ul li { margin: 15px 22px 0 0; }
+    footer .nav { width: 94%; padding: 33px 2% 0; }
+    footer .nav dl { width: 100%; margin: 0 0 31px; }
+    footer .nav dl dt { min-height: 25px; font-size: 18px; }
+    footer .nav dl dd { float: left; margin-right: 15px; font-size: 14px; }
+    footer .bottom { width: 94%; padding: 3%; }
+    footer .bottom p { margin: 8px 0 20px; font-size: 14px; }
+    footer .bottom .link li a { font-size: 14px; }
+
+    .contactBox.col480 input[type=text], 
+    .contactBox.col480 textarea, 
+    .contactBox.col480 [type=email] { width: 100% !important; }
+    .contactBox.col480 textarea { height: 110px !important; }
+
+    .bwGallery { width: 100%; height: auto; overflow: visible; margin: 0 auto; }
+    .bwGallery li { position: relative; width: 100%; height: auto; display: block; float: left; margin-bottom: 10px; }
+    .bwGallery li img { position: relative !important; }
+    .bwGallery .tTip { width: 96%; height: auto; padding: 0 2%; }
+    .bwGallery .tTip:before { border-style: hidden; }
+    .close { font-weight: bold; cursor: pointer; }
+
+    .lastUnit { width: 100%; display: block; }
+    .panel-col-twenty-five,
+    .panel-col-twenty-five-end,
+    .panel-col-seventy-five-end { width: 100%; float: none; }
+    .hompage-content-inside .col730 { width: 100% !important; }
+    .p2gBannerIntro { width: 100% !important; padding: 0; }
+
+    .panel-col-fifty-middle { width: 100% !important; }
+}
+
+@media only screen and (max-width: 320px)
+{
+    .wrapper .view-agency-views-field-dynamic-view .view-filters { top: -135px !important; }
+}

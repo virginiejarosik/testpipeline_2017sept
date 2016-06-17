@@ -83,13 +83,11 @@
  * webserver.  For most other drivers, you must specify a
  * username, password, host, and database name.
  *
- * Transaction support is enabled by default for all drivers that support it,
- * including MySQL. To explicitly disable it, set the 'transactions' key to
- * FALSE.
- * Note that some configurations of MySQL, such as the MyISAM engine, don't
- * support it and will proceed silently even if enabled. If you experience
- * transaction related crashes with such configuration, set the 'transactions'
- * key to FALSE.
+ * Some database engines support transactions.  In order to enable
+ * transaction support for a given database, set the 'transactions' key
+ * to TRUE.  To disable it, set it to FALSE.  Note that the default value
+ * varies by driver.  For MySQL, the default is FALSE since MyISAM tables
+ * do not support transactions.
  *
  * For each database, you may optionally specify multiple "target" databases.
  * A target database allows Drupal to try to send certain queries to a
@@ -149,7 +147,7 @@
  *     'authmap'   => 'shared_',
  *   ),
  * @endcode
- * You can also use a reference to a schema/database as a prefix. This may be
+ * You can also use a reference to a schema/database as a prefix. This maybe
  * useful if your Drupal installation exists in a schema that is not the default
  * or you want to access several databases from the same code base at the same
  * time.
@@ -212,7 +210,26 @@
  *   );
  * @endcode
  */
-$databases = array();
+
+
+//$databases = array (
+//  'default' => 
+//  array (
+//    'default' => 
+//    array (
+//      'database' => 'jafi',
+//      'username' => 'jafi',
+//      'password' => 'XGQm8MrVoyQc3hN',
+//      'host' => 'ded-4688.prod.hosting.acquia.com',
+//      'port' => '',
+//      'driver' => 'mysql',
+//      'prefix' => '',
+//    ),
+//  ),
+//);
+
+
+
 
 /**
  * Access control for update.php script.
@@ -244,7 +261,7 @@ $update_free_access = FALSE;
  *   $drupal_hash_salt = file_get_contents('/home/example/salt.txt');
  *
  */
-$drupal_hash_salt = '';
+$drupal_hash_salt = 'CetUhnr336H2Utbgappm0wCDRzcl1f5WGWX6Sf9QJ3U';
 
 /**
  * Base URL (optional).
@@ -273,7 +290,7 @@ $drupal_hash_salt = '';
  *
  * To see what PHP settings are possible, including whether they can be set at
  * runtime (by using ini_set()), read the PHP documentation:
- * http://www.php.net/manual/ini.list.php
+ * http://www.php.net/manual/en/ini.list.php
  * See drupal_environment_initialize() in includes/bootstrap.inc for required
  * runtime settings and the .htaccess file for non-runtime settings. Settings
  * defined there should not be duplicated here so as to avoid conflict issues.
@@ -309,7 +326,7 @@ ini_set('session.cookie_lifetime', 2000000);
  * output filter may not have sufficient memory to process it.  If you
  * experience this issue, you may wish to uncomment the following two lines
  * and increase the limits of these variables.  For more information, see
- * http://php.net/manual/pcre.configuration.php.
+ * http://php.net/manual/en/pcre.configuration.php.
  */
 # ini_set('pcre.backtrack_limit', 200000);
 # ini_set('pcre.recursion_limit', 200000);
@@ -324,7 +341,7 @@ ini_set('session.cookie_lifetime', 2000000);
  * with a leading dot, as per RFC 2109.
  */
 # $cookie_domain = '.example.com';
-
+$cookie_domain = '.jewishagency.org';
 /**
  * Variable overrides:
  *
@@ -387,13 +404,14 @@ ini_set('session.cookie_lifetime', 2000000);
  * Be aware, however, that it is likely that this would allow IP
  * address spoofing unless more advanced precautions are taken.
  */
-# $conf['reverse_proxy'] = TRUE;
+$conf['reverse_proxy'] = TRUE;
 
 /**
  * Specify every reverse proxy IP address in your environment.
  * This setting is required if $conf['reverse_proxy'] is TRUE.
  */
 # $conf['reverse_proxy_addresses'] = array('a.b.c.d', ...);
+$conf['reverse_proxy_addresses'] = array('127.0.0.1');
 
 /**
  * Set this value if your proxy server sends the client IP in a header
@@ -435,21 +453,9 @@ ini_set('session.cookie_lifetime', 2000000);
 # $conf['js_gzip_compression'] = FALSE;
 
 /**
- * Block caching:
- *
- * Block caching may not be compatible with node access modules depending on
- * how the original block cache policy is defined by the module that provides
- * the block. By default, Drupal therefore disables block caching when one or
- * more modules implement hook_node_grants(). If you consider block caching to
- * be safe on your site and want to bypass this restriction, uncomment the line
- * below.
- */
-# $conf['block_cache_bypass_node_grants'] = TRUE;
-
-/**
  * String overrides:
  *
- * To override specific strings on your site with or without enabling the Locale
+ * To override specific strings on your site with or without enabling locale
  * module, add an entry to this list. This functionality allows you to change
  * a small number of your site's default English language interface strings.
  *
@@ -479,9 +485,13 @@ ini_set('session.cookie_lifetime', 2000000);
  *
  * Remove the leading hash signs to enable.
  */
-# $conf['blocked_ips'] = array(
-#   'a.b.c.d',
-# );
+ $conf['blocked_ips'] = array(
+   '79.190.81.206',
+   '211.180.121.51',
+   '37.193.6.124',
+   '178.236.112.5',
+   '201.236.98.35'
+ );
 
 /**
  * Fast 404 pages:
@@ -494,7 +504,6 @@ ini_set('session.cookie_lifetime', 2000000);
  * specific pattern:
  * - 404_fast_paths_exclude: A regular expression to match paths to exclude,
  *   such as images generated by image styles, or dynamically-resized images.
- *   The default pattern provided below also excludes the private file system.
  *   If you need to add more paths, you can add '|path' to the expression.
  * - 404_fast_paths: A regular expression to match paths that should return a
  *   simple 404 page, rather than the fully themed 404 page. If you don't have
@@ -503,9 +512,39 @@ ini_set('session.cookie_lifetime', 2000000);
  *
  * Add leading hash signs if you would like to disable this functionality.
  */
-$conf['404_fast_paths_exclude'] = '/\/(?:styles)|(?:system\/files)\//';
+/**
+* Fast 404 settings:
+*/
+$conf['404_fast_paths_exclude'] = '/\/(?:styles)\//';
 $conf['404_fast_paths'] = '/\.(?:txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
 $conf['404_fast_html'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "@path" was not found on this server.</p></body></html>';
+
+// This path may need to be changed if the fast 404 module is in a different location.
+include_once DRUPAL_ROOT . '/sites/all/modules/external/fast_404/fast_404.inc';
+
+# Disallowed extensions. Any extension in here will not be served by Drupal and
+# will get a fast 404.
+$conf['fast_404_exts'] = '/^(?!robots)\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
+
+# Array of whitelisted URL fragment strings that conflict with fast_404.
+$conf['fast_404_string_whitelisting'] = array('cdn/farfuture', '/advagg_');
+
+# Default fast 404 error message.
+$conf['fast_404_html'] = '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "@path" was not found on this server.</p></body></html>';
+
+# Call the extension checking now. This will skip any logging of 404s.
+fast_404_ext_check();
+
+
+# Check paths during bootstrap and see if they are legitimate.
+# By default, a very plain 404 page is used, because usually errors like this are shown to browsers that only look at the headers. Uncomment this link to use a custom 404 page; this page needs to be in your docroot.
+$conf['fast_404_HTML_error_page'] = './page_not_found.html';
+
+# By default, the custom 404 page is loaded only for path checking. Load it for all 404s with the below option set to TRUE.
+$conf['fast_404_HTML_error_all_paths'] = FALSE;
+
+$conf['fast_404_path_check'] = TRUE;
+//fast_404_path_check();
 
 /**
  * By default the page request process will return a fast 404 page for missing
@@ -518,10 +557,10 @@ $conf['404_fast_html'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
  * server response time when loading 404 error pages and prevents the 404 error
  * from being logged in the Drupal system log. In order to prevent valid pages
  * such as image styles and other generated content that may match the
- * '404_fast_paths' regular expression from returning 404 errors, it is
- * necessary to add them to the '404_fast_paths_exclude' regular expression
- * above. Make sure that you understand the effects of this feature before
- * uncommenting the line below.
+ * '404_fast_html' regular expression from returning 404 errors, it is necessary
+ * to add them to the '404_fast_paths_exclude' regular expression above. Make
+ * sure that you understand the effects of this feature before uncommenting the
+ * line below.
  */
 # drupal_fast_404();
 
@@ -568,22 +607,58 @@ $conf['404_fast_html'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
 # $conf['allow_authorize_operations'] = FALSE;
 
 /**
- * Theme debugging:
- *
- * When debugging is enabled:
- * - The markup of each template is surrounded by HTML comments that contain
- *   theming information, such as template file name suggestions.
- * - Note that this debugging markup will cause automated tests that directly
- *   check rendered HTML to fail.
- *
- * For more information about debugging theme templates, see
- * https://www.drupal.org/node/223440#theme-debug.
- *
- * Not recommended in production environments.
- *
- * Remove the leading hash sign to enable.
- */
-# $conf['theme_debug'] = TRUE;
+* Add the domain module setup routine.
+*/
+include_once DRUPAL_ROOT . '/sites/default/redirect.php';
+include_once DRUPAL_ROOT . '/includes/debug.inc';
+
+global $da_site;
+if($da_site) {
+  $base_url = 'http://' . $_SERVER['ORIGINAL_HTTP_HOST'] . '/' . $da_site;
+  $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_HOST'] = $_SERVER['ORIGINAL_HTTP_HOST'] = $da_site . str_replace('www', '', $_SERVER['ORIGINAL_HTTP_HOST']);
+  //fixing no start slash problem
+  if ($_SERVER['REQUEST_URI'] == '') {
+    header("HTTP/1.1 301 Moved Permanently"); 
+    header("Location: " . $base_url . '/'); 
+  }
+}
+
+// <DDSETTINGS>
+// Please don't edit anything between <DDSETTINGS> tags.
+// This section is autogenerated by Acquia Dev Desktop.
+if (isset($_SERVER['DEVDESKTOP_DRUPAL_SETTINGS_DIR']) && file_exists($_SERVER['DEVDESKTOP_DRUPAL_SETTINGS_DIR'] . '/loc_jafi_local_dd.inc')) {
+require $_SERVER['DEVDESKTOP_DRUPAL_SETTINGS_DIR'] . '/loc_jafi_local_dd.inc';
+}
+// </DDSETTINGS>
+include_once DRUPAL_ROOT . '/sites/all/modules/external/domain/settings.inc';
+$conf['drupal_http_request_fails'] = FALSE;
+$conf['simpleviews_field_get_views'] = array('simpleviews_field_dynamic_view', 'agency_views_field_dynamic_view');
+
+//include_once DRUPAL_ROOT . '/includes/debug.inc';
+// Add Varnish as the page cache handler.
+//$conf['cache_backends'] = array('sites/all/modules/external/varnish/varnish.cache.inc');
+//$conf['cache_class_cache_page'] = 'VarnishCache';
+// Drupal 7 does not cache pages when we invoke hooks during bootstrap. This needs
+// to be disabled.
+//$conf['page_cache_invoke_hooks'] = FALSE;
+include_once DRUPAL_ROOT . '/includes/cache.inc';
+include_once DRUPAL_ROOT . '/sites/all/modules/external/memcache/memcache.inc';
+
+$conf['cache_backends'][] = 'sites/all/modules/external/memcache/memcache.inc';
+$conf['cache_default_class'] = 'MemCacheDrupal';
+$conf['cache_class_cache_form'] = 'DrupalDatabaseCache';
+$conf['memcache_servers'] = array('ded-4688.prod.hosting.acquia.com:11211', 'ded-4689.prod.hosting.acquia.com:11211');
+$conf['page_memory_limit']['admin/*'] = '256M';
+$conf['page_memory_limit']['batch'] = '256M';
+$conf['page_memory_limit']['node/add/*'] = '256M';
+$conf['page_memory_limit']['node/*/edit'] = '256M';
+$conf['page_memory_limit']['file/add'] = '512M';
+// On Acquia Cloud, this include file configures Drupal to use the correct
+// database in each site environment (Dev, Stage, or Prod). To use this 
+// settings.php for development on your local workstation, set $db_url
+// (Drupal 5 or 6) or $databases (Drupal 7) as described in comments above.
+if (file_exists('/var/www/site-php')) {
+}
 
 
 // On Acquia Cloud, this include file configures Drupal to use the correct

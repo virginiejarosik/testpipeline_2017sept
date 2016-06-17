@@ -1,0 +1,31 @@
+Index: sites/all/modules/external/wysiwyg/wysiwyg.js
+===================================================================
+--- sites/all/modules/external/wysiwyg/wysiwyg.js	(revision 63248)
++++ sites/all/modules/external/wysiwyg/wysiwyg.js	(working copy)
+@@ -1,6 +1,26 @@
+ (function($) {
+ 
+ /**
++ * Disable backspace
++ */
++$(function(){
++ var keyStop = {
++   8: ":not(input:text, textarea, input:file, input:password)", // stop backspace = back
++   13: "input:text, input:password", // stop enter = submit 
++
++   end: null
++ };
++ $(document).bind("keydown", function(event){
++  var selector = keyStop[event.which];
++
++  if(selector !== undefined && $(event.target).is(selector)) {
++      event.preventDefault(); //stop event
++  }
++  return true;
++ });
++});
++
++/**
+  * Initialize editor libraries.
+  *
+  * Some editors need to be initialized before the DOM is fully loaded. The

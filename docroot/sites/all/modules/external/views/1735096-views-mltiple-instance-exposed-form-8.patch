@@ -1,0 +1,57 @@
+diff --git a/includes/view.inc b/includes/view.inc
+index d8c0c1f..cfd97b5 100644
+--- a/includes/view.inc
++++ b/includes/view.inc
+@@ -2021,7 +2021,7 @@ class view extends views_db_object {
+       unset($this->query);
+     }
+ 
+-    $keys = array('current_display', 'display_handler', 'build_info', 'built', 'executed', 'attachment_before', 'attachment_after', 'field', 'argument', 'filter', 'sort', 'relationship', 'header', 'footer', 'empty', 'query', 'result', 'inited', 'style_plugin', 'plugin_name', 'exposed_data', 'exposed_input', 'many_to_one_tables');
++    $keys = array('current_display', 'display_handler', 'build_info', 'built', 'executed', 'attachment_before', 'attachment_after', 'field', 'argument', 'filter', 'sort', 'relationship', 'header', 'footer', 'empty', 'query', 'result', 'inited', 'style_plugin', 'plugin_name', 'exposed_data', 'exposed_input', 'many_to_one_tables', 'dom_id');
+     foreach ($keys as $key) {
+       if (isset($this->$key)) {
+         unset($this->$key);
+diff --git a/js/ajax_view.js b/js/ajax_view.js
+index 780691c..629a046 100644
+--- a/js/ajax_view.js
++++ b/js/ajax_view.js
+@@ -57,7 +57,7 @@ Drupal.views.ajaxView = function(settings) {
+   this.settings = settings;
+ 
+   // Add the ajax to exposed forms.
+-  this.$exposed_form = $('form#views-exposed-form-'+ settings.view_name.replace(/_/g, '-') + '-' + settings.view_display_id.replace(/_/g, '-'));
++  this.$exposed_form = $('form#views-exposed-form-'+ settings.view_name.replace(/_/g, '-') + '-' + settings.view_display_id.replace(/_/g, '-') + '-' + settings.view_dom_id);
+   this.$exposed_form.once(jQuery.proxy(this.attachExposedFormAjax, this));
+ 
+   // Add the ajax to pagers.
+diff --git a/views.module b/views.module
+index fc427f4..199cbbd 100644
+--- a/views.module
++++ b/views.module
+@@ -1952,7 +1952,7 @@ function views_exposed_form($form, &$form_state) {
+   // Let form plugins know this is for exposed widgets.
+   $form_state['exposed'] = TRUE;
+   // Check if the form was already created
+-  if ($cache = views_exposed_form_cache($view->name, $view->current_display)) {
++  if ($cache = views_exposed_form_cache($view->name, $view->current_display . '-' . $view->dom_id)) {
+     return $cache;
+   }
+ 
+@@ -1997,7 +1997,7 @@ function views_exposed_form($form, &$form_state) {
+ 
+   $form['#action'] = url($view->display_handler->get_url());
+   $form['#theme'] = views_theme_functions('views_exposed_form', $view, $display);
+-  $form['#id'] = drupal_clean_css_identifier('views_exposed_form-' . check_plain($view->name) . '-' . check_plain($display->id));
++  $form['#id'] = drupal_clean_css_identifier('views_exposed_form-' . check_plain($view->name) . '-' . check_plain($display->id) . '-' . check_plain($view->dom_id));
+ //  $form['#attributes']['class'] = array('views-exposed-form');
+ 
+   // If using AJAX, we need the form plugin.
+@@ -2010,7 +2010,7 @@ function views_exposed_form($form, &$form_state) {
+   $exposed_form_plugin->exposed_form_alter($form, $form_state);
+ 
+   // Save the form
+-  views_exposed_form_cache($view->name, $view->current_display, $form);
++  views_exposed_form_cache($view->name, $view->current_display . '-' . $view->dom_id, $form);
+ 
+   return $form;
+ }
