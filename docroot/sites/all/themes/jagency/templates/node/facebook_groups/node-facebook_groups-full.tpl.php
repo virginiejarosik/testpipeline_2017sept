@@ -1,2 +1,0 @@
-<br>
-<iframe src="//www.facebook.com/plugins/likebox.php?href=<?php print render($content['field_facebook_page_url']); ?>&amp;width=730&amp;height=258&amp;colorscheme=light&amp;show_faces=true&amp;header=false&amp;stream=false&amp;show_border=false&amp;appId=241402872551013" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:730px; height:258px;" allowTransparency="true"></iframe>

@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the Jagency Migrate FT feature.
- */
-
-include_once 'jagency_migrate_ft.features.inc';

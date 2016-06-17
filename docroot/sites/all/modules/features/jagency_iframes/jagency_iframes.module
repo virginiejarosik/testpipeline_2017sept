@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the jagency_iframes feature.
- */
-
-include_once 'jagency_iframes.features.inc';

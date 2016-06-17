@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the jagency_location feature.
- */
-
-include_once 'jagency_location.features.inc';

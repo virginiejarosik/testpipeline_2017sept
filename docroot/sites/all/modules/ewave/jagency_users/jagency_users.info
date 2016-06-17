@@ -1,7 +1,0 @@
-name = Jewish Agency Authors Module
-description = Display Authors on custom block
-package = Jewish Agency
-core = 7.x
-version = "7.x-1.0"
-
-files[] = jagency_users.module

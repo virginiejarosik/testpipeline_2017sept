@@ -1,1 +1,0 @@
-<div class="logo"><?php print l(render($content['field_image']), strip_tags(render($content['field_logo_link'])), array('html' => true, 'attributes' => array('target' => '_blank'))); ?></div>

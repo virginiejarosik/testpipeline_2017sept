@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the jagency_story feature.
- */
-
-include_once 'jagency_story.features.inc';

@@ -1,1 +1,0 @@
-<?php print jagency_theme_get_element_byclass(render($page['content']) ,'block block-system');?>

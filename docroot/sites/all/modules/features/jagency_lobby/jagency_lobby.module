@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the jagency_lobby feature.
- */
-
-include_once 'jagency_lobby.features.inc';

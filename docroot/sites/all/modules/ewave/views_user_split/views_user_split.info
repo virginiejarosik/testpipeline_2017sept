@@ -1,8 +1,0 @@
-name = Views user split
-description = A views row plugin that can split the display of a view of nodes so that you can have different view modes for the first results of the view.
-core = 7.x
-package = Views
-dependencies[] = views
-files[] = plugins/views_plugin_row_user_view_split.inc
-
-

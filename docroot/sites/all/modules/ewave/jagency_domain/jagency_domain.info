@@ -1,8 +1,0 @@
-name = Jewish Agency Domain Module
-description = All functional support for domains on Jewish Agency
-package = Jewish Agency
-core = 7.x
-version = "7.x-1.0"
-
-dependencies[] = domain
-dependencies[] = domain_subfolder
