@@ -5,6 +5,5 @@ events:
       - hello:
           type: script
           script:
-            - echo "Hello, Pipelines!" > docroot/hello.txt
-            - echo $PIPELINE_JOB_ID: >> docroot/hello.txt
+			- echo $PIPELINE_JOB_ID >> docroot/hello.txt
 
